@@ -104,6 +104,14 @@ class WebController extends Controller
         }
     }
 
+    public function getComment(Request $req)
+    {
+        if ($req->ajax()) {
+            $data = $this->web->getComment($req);
+            return $data;
+        }
+    }
+
     public function login()
     {
         return view('Web.Master.login');

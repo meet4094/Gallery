@@ -33,6 +33,7 @@
                     <div class="anime__details__text">
                         <div class="anime__details__title">
                             <h3>{{$persondetails['persondata']['name']}}</h3>
+                            <input type="text" class="personId" hidden value="{{$persondetails['persondata']['id']}}">
                             <!-- <span>フェイト／ステイナイト, Feito／sutei naito</span> -->
                         </div>
                         <div class="anime__details__rating">
@@ -91,7 +92,7 @@
                     <div class="row">
                         @foreach($persondetails['personimage'] as $data)
                         @if($data['image'] != '')
-                        <div class="col-lg-4 col-md-6 col-sm-6">
+                        <div class="col-lg-3 col-md-6 col-sm-6">
                             <div class="product__item">
                                 <a target="_blank" href="{{$data['image']}}">
                                     <img style="width: 100%;" src="{{$data['image']}}" alt="">
@@ -113,7 +114,7 @@
                     <div class="row">
                         @foreach($persondetails['personimage'] as $data)
                         @if($data['video'] != '')
-                        <div class="col-lg-4 col-md-6 col-sm-6">
+                        <div class="col-lg-3 col-md-6 col-sm-6">
                             <div class="product__item">
                                 <a target="_blank" href="{{$data['video']}}">
                                     <video style="width: 100%;" controls src="{{$data['video']}}" alt="">
@@ -132,25 +133,7 @@
                     <div class="section-title">
                         <h5>Reviews</h5>
                     </div>
-                    <div class="anime__review__item">
-                        <div class="anime__review__item__pic">
-                            <img src="img/anime/review-1.jpg" alt="">
-                        </div>
-                        <div class="anime__review__item__text">
-                            <h6>Chris Curry - <span>1 Hour ago</span></h6>
-                            <p>whachikan Just noticed that someone categorized this as belonging to the genre
-                                "demons" LOL</p>
-                        </div>
-                    </div>
-                    <div class="anime__review__item">
-                        <div class="anime__review__item__pic">
-                            <img src="img/anime/review-2.jpg" alt="">
-                        </div>
-                        <div class="anime__review__item__text">
-                            <h6>Lewis Mann - <span>5 Hour ago</span></h6>
-                            <p>Finally it came out ages ago</p>
-                        </div>
-                    </div>
+                    <div id="person_comment"></div>
                 </div>
                 <div class="anime__details__form">
                     <div class="section-title">
@@ -277,6 +260,41 @@
             }
         });
         return false;
+    });
+
+    // Get Comment 
+    $(document).ready(function() {
+        var personId = $('.personId').val();
+        $.ajax({
+            type: 'POST',
+            url: "{{ url('/getComment') }}",
+            data: {
+                personId: personId
+            },
+            success: function(response) {
+                if (response.st == 'success') {
+                    // console.log(response.comment);
+                    $.each(response.comment, function(prefix, val) {
+                        $('#person_comment').append(
+                            `<div class="anime__review__item">
+                        <div class="anime__review__item__pic">
+                            <img src="${val.image}" alt="">
+                        </div>
+                        <div class="anime__review__item__text">
+                            <h6>${val.username}<span> ${val.commenttime}</span></h6>
+                            <p>${val.comment}</p>
+                        </div>
+                    </div>`
+                        )
+                    })
+                } else {
+                    alert('failed');
+                }
+            },
+            error: function(error) {
+                alert('Error');
+            }
+        });
     });
 </script>
 @endsection

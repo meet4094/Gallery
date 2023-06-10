@@ -151,7 +151,7 @@
                             $('.product__pagination').append(
                                 `<a onClick="pagination(${i})" id="${i}" style="cursor: pointer;" class="current-page">${i}</a>`
                             )
-                        } else if (i <= 2) {
+                        } else if (i <= 5) {
                             $('.product__pagination').append(
                                 `<a onClick="pagination(${i})" id="${i}" style="cursor: pointer;">${i}</a>`
                             )
@@ -266,7 +266,7 @@
                             $('.product__pagination').append(
                                 `<a onClick="pagination(${i})" id="${i}" style="cursor: pointer;" class="current-page">${i}</a>`
                             )
-                        } else if (i <= 2) {
+                        } else if (i <= 5) {
                             $('.product__pagination').append(
                                 `<a onClick="pagination(${i})" id="${i}" style="cursor: pointer;">${i}</a>`
                             )
@@ -274,12 +274,12 @@
                     }
                     if (response.lastpage != "") {
                         $('.product__pagination').append(
-                            `<a onClick="pagination(${response.lastpage})" id="${response.lastpage}" style="cursor: pointer;">${response.lastpage}</a>`
+                            `<a onClick="pagination(${response.lastpage})" id="${response.lastpage}">${response.lastpage}</a>`
                         )
                     }
                     if (i > 2) {
                         $('.product__pagination').append(
-                            `<a onClick="pagination(${i})" id="${i}" style="cursor: pointer;"><i class="fa fa-angle-double-right"></i></a>`
+                            `<a onClick="pagination(${i})" id="${i}" ><i class="fa fa-angle-double-right"></i></a>`
                         )
                     }
                     if (response.lastpage != "") {
@@ -287,7 +287,8 @@
                     } else {
                         var newpageId = pageId;
                     }
-                    var pagecount = response.PdataCount + 1;
+                    // console.log(newpageId);
+                    var pagecount = response.PdataCount;
                     for (let index = 1; index <= pagecount; index++) {
                         var RemoveClass = document.getElementById(index);
                         RemoveClass.classList.remove("current-page");

@@ -32,6 +32,7 @@ Route::controller(WebController::class)->group(function () {
     Route::get('/person_details/{id}', 'person_details');
     Route::get('/login', 'login')->name('login');
     Route::post('/sendcomment', 'sendcomment');
+    Route::post('/getComment', 'getComment');
     Route::get('/blog', 'blog')->name('blog');
 
     Route::get('/login/google', 'loginGoogle');

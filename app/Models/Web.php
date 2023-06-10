@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Socialite\Facades\Socialite;
+
 use Illuminate\Support\Str;
 use Exception;
 
@@ -332,8 +333,6 @@ class Web extends Model
             return response()->json(['error' => $validator->errors()->toArray()]);
         } else {
             $login = Auth::User();
-            print_r($login);
-            die;
             if (empty($login)) {
                 return response()->json(['st' => 'success', 'msg' => 'Please Login']);
             } else {
@@ -341,6 +340,7 @@ class Web extends Model
                 return $data;
             }
             $data = array(
+                'user_id' => '',
                 'person_id' => $req->pid,
                 'comment' => $req->comment,
             );
@@ -348,6 +348,55 @@ class Web extends Model
             DB::table('comment')->insert($data);
             return response()->json(['st' => 'success', 'msg' => 'Comment has been added',]);
         }
+    }
+
+    // Get Comment
+    function getComment($req)
+    {
+        $builder = DB::table('comment as c');
+        $builder->where(array('c.is_del' => 0));
+        $builder->join('users as u', 'u.id', '=', 'c.user_id');
+        $builder->where('c.person_id', '=', $req->personId);
+        $builder->select('c.id', 'c.comment', 'c.created_at', 'c.user_id', 'u.user_name as username', 'u.image');
+        $builder->orderBy('id', 'desc');
+        $builder->limit(5);
+        $data = $builder->get();
+
+        $commentData = array();
+        foreach ($data as $key => $value) {
+
+            $livedate = date('Y-m-d H:i:s');
+            $date = $value->created_at;
+
+            $toDate = Carbon::parse($livedate);
+            $fromDate = Carbon::parse($date);
+
+            $minutes = $toDate->diffInMinutes($fromDate);
+            $hours = $toDate->diffInHours($fromDate);
+            $days = $toDate->diffInDays($fromDate);
+            $months = $toDate->diffInMonths($fromDate);
+            $years = $toDate->diffInYears($fromDate);
+
+            if ($minutes <= '60' && $hours == 0) {
+                $created_at = $minutes . ' ' . 'Minutes Ago';
+            } else if ($hours <= '24' && $days == 0) {
+                $created_at = $hours . ' ' . 'Hours Ago';
+            } else if ($days <= '31' && $months == 0) {
+                $created_at = $days . ' ' .  'Days Ago';
+            } else if ($months <= '12' && $years == 0) {
+                $created_at = $months . ' ' .  'Months Ago';
+            } else {
+                $created_at = $years . ' ' .  'Years Ago';
+            }
+            $commentData[] = array(
+                'id' => $value->id,
+                'comment' => $value->comment,
+                'username' => $value->username,
+                'image' => $value->image,
+                'commenttime' => $created_at,
+            );
+        }
+        return response()->json(['st' => 'success', 'comment' => $commentData]);
     }
 
     public function callback()
@@ -359,9 +408,7 @@ class Web extends Model
             $finduser = DB::table('users')->where('google_id', $user->id)->first();
             if ($finduser) {
 
-                $ffd = Auth::user();
-                print_r($ffd);
-                die;
+                Auth::login($finduser);
 
                 return redirect()->intended('/');
             } else {
@@ -370,13 +417,14 @@ class Web extends Model
                     'email' => $user->email,
                     'user_name' => $user->name,
                     'password' => Hash::make($user->name . '@' . $user->id),
+                    'image' => $user->picture,
                     'request_token' => Str::random(15),
                     'type' => '2'
                 );
 
                 DB::table('users')->insert($newUser);
 
-                Auth::loginUsingId($newUser['google_id'], true);
+                Auth::login($newUser);
 
                 return redirect()->intended('/');
             }
