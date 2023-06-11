@@ -34,7 +34,8 @@ Route::controller(WebController::class)->group(function () {
     Route::post('/sendcomment', 'sendcomment');
     Route::post('/getComment', 'getComment');
     Route::get('/blog', 'blog')->name('blog');
-
+    Route::post('/searchPerson', 'searchPerson');
+    
     Route::get('/login/google', 'loginGoogle');
     Route::get('/login/google/callback', 'callback');
 });

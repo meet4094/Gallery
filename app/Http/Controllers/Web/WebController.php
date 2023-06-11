@@ -91,7 +91,6 @@ class WebController extends Controller
 
     public function blog()
     {
-        $data['category'] = $this->web->category();
         $data['title'] = 'blog';
         return view('Web.Master.blog', $data);
     }
@@ -108,6 +107,14 @@ class WebController extends Controller
     {
         if ($req->ajax()) {
             $data = $this->web->getComment($req);
+            return $data;
+        }
+    }
+
+    public function searchPerson(Request $req)
+    {
+        if ($req->ajax()) {
+            $data = $this->web->searchPerson($req);
             return $data;
         }
     }

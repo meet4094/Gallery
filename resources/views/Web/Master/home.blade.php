@@ -290,5 +290,34 @@
             }
         });
     });
+
+    // Search person 
+    $('.search-model-form').on('submit', function(e) {
+        e.preventDefault();
+        var aurl = $(this).attr('action');
+        var form = $(this);
+        var formdata = false;
+        if (window.FormData) {
+            formdata = new FormData(form[0]);
+        }
+        $.ajax({
+            type: "POST",
+            url: aurl,
+            cache: false,
+            contentType: false,
+            processData: false,
+            data: formdata ? formdata : form.serialize(),
+            success: function(response) {
+                console.log(response);
+                if (response.st == 'success') {
+
+                } else {}
+            },
+            error: function() {
+                alert('Error');
+            }
+        });
+        return false;
+    });
 </script>
 @endsection

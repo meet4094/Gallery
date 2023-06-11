@@ -40,8 +40,10 @@
 <div class="search-model">
     <div class="h-100 d-flex align-items-center justify-content-center">
         <div class="search-close-switch"><i class="icon_close"></i></div>
-        <form class="search-model-form">
-            <input type="text" id="search-input" placeholder="Search here....." />
+        <form action="{{url ('/searchPerson')}}" id="cform" method="post" enctype="multipart/form-data" class="search-model-form">
+            @csrf
+            <input type="text" name="name" id="search-input" placeholder="Search here....." />
+            <button type="submit" class="search-switch"><span class="icon_search"></span></button>
         </form>
     </div>
 </div>

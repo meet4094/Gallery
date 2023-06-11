@@ -4,7 +4,8 @@
             <div class="col-lg-2">
                 <div class="header__logo">
                     <a href="/">
-                        <img src="{{asset('web/assets/img/logo.png')}}" alt="">
+                        <!-- <img src="{{asset('web/assets/img/logo.png')}}" alt=""> -->
+                        <h3 style="color: white; font-weight: 800; font-size: 25px;">Gall<span style="color: #e63334;">ery</span></h3>
                     </a>
                 </div>
             </div>

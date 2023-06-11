@@ -22,6 +22,13 @@ class Web extends Model
         return response()->json(['st' => 'success', 'category' => $data]);
     }
 
+    // Search Person Data
+    public function searchPerson($req)
+    {
+        $builder = DB::table('person as p');
+        $builder->where(array('p.is_del' => 0));
+        $builder->where('p.name', '=', $req->name);
+    }
     //All Person Data
     public function getAllPersondata($req)
     {
