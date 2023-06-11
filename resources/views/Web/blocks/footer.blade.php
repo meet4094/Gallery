@@ -43,7 +43,7 @@
         <form action="{{url ('/searchPerson')}}" id="cform" method="post" enctype="multipart/form-data" class="search-model-form">
             @csrf
             <input type="text" name="name" id="search-input" placeholder="Search here....." />
-            <button type="submit" class="search-switch"><span class="icon_search"></span></button>
+            <!-- <button hidden type="submit" class="search-switch"><span class="icon_search"></span></button> -->
         </form>
     </div>
 </div>

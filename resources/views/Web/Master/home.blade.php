@@ -157,7 +157,7 @@
             url: "{{ url('/getTrendingPersondata') }}",
             success: function(response) {
                 if (response.st == 'success') {
-                    // console.log(response.category);
+                    // console.log(response.trendingperson);
                     $.each(response.trendingperson, function(prefix, val) {
                         $('#trending__product').append(
                             `<div class="col-lg-4 col-md-6 col-sm-6">
@@ -310,7 +310,30 @@
             success: function(response) {
                 console.log(response);
                 if (response.st == 'success') {
-
+                    $('#trending__product').html('');
+                    $.each(response.trendingperson, function(prefix, val) {
+                        $('#trending__product').append(
+                            `<div class="col-lg-4 col-md-6 col-sm-6">
+                            <div class="product__item">
+                                <div class="product__item__pic set-bg" data-setbg="${val.image}" style="background-image:url('${val.image}')">
+                                    <!-- <div class="ep">18 / 18</div> -->
+                                    <div class="comment">
+                                        <!-- <i class="fa fa-comments"></i> 11 -->
+                                    </div>
+                                    <div class="view"><i class="fa fa-eye"></i> ${val.trending}</div>
+                                </div>
+                                <div class="product__item__text">
+                                    <ul>
+                                        <li>${val.categoryname}</li>
+                                    </ul>
+                                    <h5>
+                                        <a href="{{url('person_details')}}/${val.id}">${val.name}</a>
+                                    </h5>
+                                </div>
+                            </div>
+                        </div>`
+                        );
+                    });
                 } else {}
             },
             error: function() {

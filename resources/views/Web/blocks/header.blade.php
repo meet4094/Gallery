@@ -3,7 +3,7 @@
         <div class="row">
             <div class="col-lg-2">
                 <div class="header__logo">
-                    <a href="/">
+                    <a href="{{ url('/') }}">
                         <!-- <img src="{{asset('web/assets/img/logo.png')}}" alt=""> -->
                         <h3 style="color: white; font-weight: 800; font-size: 25px;">Gall<span style="color: #e63334;">ery</span></h3>
                     </a>
@@ -13,13 +13,13 @@
                 <div class="header__nav">
                     <nav class="header__menu mobile-menu">
                         <ul>
-                            <li class="{{ @$title == 'home' ? 'active' : '' }}"><a href="/">Homepage</a></li>
+                            <li class="{{ @$title == 'home' ? 'active' : '' }}"><a href="{{ url('/') }}">Homepage</a></li>
                             <li class="{{ @$title == 'categories' ? 'active' : '' }}"><a href="{{ url('categories') }}">Categories <span class="arrow_carrot-down"></span></a>
                                 <ul class="dropdown" id="category_data">
                                 </ul>
                             </li>
-                            <li class="{{ @$title == 'blog' ? 'active' : '' }}"><a href="/blog">Our Blog</a></li>
-                            <li class="{{ @$title == 'login' ? 'active' : '' }}"><a href="/login">Contacts</a></li>
+                            <li class="{{ @$title == 'blog' ? 'active' : '' }}"><a href="{{ url('/blog') }}">Our Blog</a></li>
+                            <li class="{{ @$title == 'login' ? 'active' : '' }}"><a href="{{ url('/login') }}">Contacts</a></li>
                         </ul>
                     </nav>
                 </div>

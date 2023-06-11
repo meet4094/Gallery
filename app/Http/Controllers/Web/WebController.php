@@ -114,7 +114,8 @@ class WebController extends Controller
     public function searchPerson(Request $req)
     {
         if ($req->ajax()) {
-            $data = $this->web->searchPerson($req);
+            $data = $this->web->getTrendingPersondata($req);
+            $data = $this->web->getRecentlyAddPersondata($req);
             return $data;
         }
     }

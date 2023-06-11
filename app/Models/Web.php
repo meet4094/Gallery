@@ -22,13 +22,6 @@ class Web extends Model
         return response()->json(['st' => 'success', 'category' => $data]);
     }
 
-    // Search Person Data
-    public function searchPerson($req)
-    {
-        $builder = DB::table('person as p');
-        $builder->where(array('p.is_del' => 0));
-        $builder->where('p.name', '=', $req->name);
-    }
     //All Person Data
     public function getAllPersondata($req)
     {
@@ -107,11 +100,41 @@ class Web extends Model
         return response()->json(['st' => 'success', 'PdataCount' => $PdataCount, 'lastpage' => $lastpage, 'recentlyperson' => $recentlyperson]);
     }
 
+    // Trending Person Data
+    public function getTrendingPersondata($req)
+    {
+        $builder = DB::table('person as p');
+        $builder->where(array('p.is_del' => 0));
+        if (isset($req->name)) {
+            $builder->where('p.name', 'LIKE', "%{$req->name}%");
+        }
+        $builder->orderBy('p.trending', 'desc');
+        $builder->join('category as c', 'c.id', 'p.category_id');
+        $builder->select('p.id', 'p.name', 'p.image', 'p.trending', 'c.name as categoryname');
+        $data = $builder->get();
+        $trendingperson = array();
+        foreach ($data as $persondata) {
+            $imagefileName = asset('images/' . $persondata->image);
+            $trendingperson[] = array(
+                'id' => $persondata->id,
+                'name' => $persondata->name,
+                'image' => $imagefileName,
+                'trending' => $persondata->trending,
+                'categoryname' => $persondata->categoryname,
+            );
+        }
+
+        return response()->json(['st' => 'success', 'trendingperson' => $trendingperson]);
+    }
+
     //Recently Add Person Data
     public function getRecentlyAddPersondata($req)
     {
         $builder = DB::table('person as p');
         $builder->where(array('p.is_del' => 0));
+        if (isset($req->name)) {
+            $builder->where('p.name', 'LIKE', "%{$req->name}%");
+        }
         $builder->orderBy('p.id', 'desc');
         $builder->join('category as c', 'c.id', 'p.category_id');
         $builder->select('p.id', 'p.name', 'p.image', 'p.trending', 'c.name as categoryname');
@@ -129,29 +152,6 @@ class Web extends Model
         }
 
         return response()->json(['st' => 'success', 'recentlyperson' => $recentlyperson]);
-    }
-
-    // Trending Person Data
-    public function getTrendingPersondata($req)
-    {
-        $builder = DB::table('person as p');
-        $builder->where(array('p.is_del' => 0));
-        $builder->orderBy('p.trending', 'desc');
-        $builder->join('category as c', 'c.id', 'p.category_id');
-        $builder->select('p.id', 'p.name', 'p.image', 'p.trending', 'c.name as categoryname');
-        $data = $builder->get();
-        $trendingperson = array();
-        foreach ($data as $persondata) {
-            $imagefileName = asset('images/' . $persondata->image);
-            $trendingperson[] = array(
-                'id' => $persondata->id,
-                'name' => $persondata->name,
-                'image' => $imagefileName,
-                'trending' => $persondata->trending,
-                'categoryname' => $persondata->categoryname,
-            );
-        }
-        return response()->json(['st' => 'success', 'trendingperson' => $trendingperson]);
     }
 
     // Top View Person Data
@@ -413,6 +413,9 @@ class Web extends Model
             $user = Socialite::driver('google')->user();
 
             $finduser = DB::table('users')->where('google_id', $user->id)->first();
+            echo '<pre>';
+            print_r($finduser);
+            die;
             if ($finduser) {
 
                 Auth::login($finduser);
