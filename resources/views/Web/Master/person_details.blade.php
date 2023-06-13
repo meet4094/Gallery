@@ -90,13 +90,11 @@
                         </div>
                     </div>
                     <div class="row">
-                        @foreach($persondetails['personimage'] as $data)
+                        @foreach($persondetails['personimage'] as $key => $data)
                         @if($data['image'] != '')
                         <div class="col-lg-3 col-md-6 col-sm-6">
                             <div class="product__item">
-                                <a target="_blank" href="{{$data['image']}}">
-                                    <img style="width: 100%;" src="{{$data['image']}}" alt="">
-                                </a>
+                                <img onclick="imgWindow(this)" class="image" id="{{$key}}" style="width: 100%;" src="{{$data['image']}}" alt="">
                             </div>
                         </div>
                         @endif
@@ -116,9 +114,7 @@
                         @if($data['video'] != '')
                         <div class="col-lg-3 col-md-6 col-sm-6">
                             <div class="product__item">
-                                <a target="_blank" href="{{$data['video']}}">
-                                    <video style="width: 100%;" controls src="{{$data['video']}}" alt="">
-                                </a>
+                                <video onclick="videoWindow(this)" style="width: 100%;" controls src="{{$data['video']}}" alt="">
                             </div>
                         </div>
                         @endif
@@ -159,7 +155,22 @@
                 </div>
             </div>
         </div>
-    </div>
+        <div id="myModalImage" class="modal">
+            <div class="carousel-container">
+                <span class="close">&times;</span>
+                <div class="slider">
+                    @foreach($persondetails['personimage'] as $data)
+                    @if($data['image'] != '')
+                    <div class="images">
+                        <img class="modal-content" src="{{$data['image']}}">
+                    </div>
+                    @endif
+                    @endforeach
+                    <a class="previous" onclick="plusSlides(-1)">❮</a>
+                    <a class="next" onclick="plusSlides(1)">❯</a>
+                </div>
+            </div>
+        </div>
 </section>
 <!-- Anime Section End -->
 @endsection
@@ -208,10 +219,10 @@
                     // console.log(response);
                     $.each(response.CategoryByAnyPersondata, function(prefix, val) {
                         $('#filter__gallery').append(
-                            `<div class="product__sidebar__view__item set-bg" data-setbg="${val.image}" style="background-image:url('${val.image}')">
+                            `<a href="{{url('person_details')}}/${val.id}"><div class="product__sidebar__view__item set-bg" data-setbg="${val.image}" style="background-image:url('${val.image}')">
                                 <div class="view"><i class="fa fa-eye"></i> ${val.trending}</div>
-                                <h5><a href="{{url('person_details')}}/${val.id}">${val.name}</a></h5>
-                            </div>`
+                                <h5 style="color: #ffffff;font-weight: 700;line-height: 26px;">${val.name}</h5>
+                            </div></a>`
                         );
                     });
                 } else {
@@ -296,5 +307,46 @@
             }
         });
     });
+</script>
+<script type="text/javascript">
+    function imgWindow() {
+        var modal = document.getElementById("myModalImage");
+        modal.style.display = "block";
+        var span = document.getElementsByClassName("close")[0];
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+    }
+
+    //Initiate moving of slides
+
+    var currentIndex = 1;
+
+    showSlides(currentIndex);
+
+    //Function to move Next
+    function plusSlides(n) {
+        showSlides(currentIndex += n);
+    }
+
+    function showSlides(n) {
+        var i;
+        var slides = document.getElementsByClassName("images");
+        var dots = document.getElementsByClassName("navigation-dot");
+        if (n > slides.length) {
+            currentIndex = 1
+        }
+        if (n < 1) {
+            currentIndex = slides.length
+        }
+        for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = "none";
+        }
+        for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(" active", "");
+        }
+        slides[currentIndex - 1].style.display = "block";
+        // dots[currentIndex - 1].className += " active";
+    }
 </script>
 @endsection

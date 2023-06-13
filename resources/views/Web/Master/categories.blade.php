@@ -125,6 +125,7 @@
                         $('#recent__product').append(
                             `<div class="col-lg-4 col-md-6 col-sm-6">
                             <div class="product__item">
+                            <a href="{{url('person_details')}}/${val.id}">
                                 <div class="product__item__pic set-bg" data-setbg="${val.image}" style="background-image:url('${val.image}')">
                                     <!-- <div class="ep">18 / 18</div> -->
                                     <div class="comment">
@@ -132,6 +133,7 @@
                                     </div>
                                     <div class="view"><i class="fa fa-eye"></i> ${val.trending}</div>
                                 </div>
+                                </a>
                                 <div class="product__item__text">
                                 <ul>
                                     <li>${val.categoryname}
@@ -190,6 +192,7 @@
                             $('#recent__product').append(
                                 `<div class="col-lg-4 col-md-6 col-sm-6">
                             <div class="product__item">
+                            <a href="{{url('person_details')}}/${val.id}">
                                 <div class="product__item__pic set-bg" data-setbg="${val.image}" style="background-image:url('${val.image}')">
                                     <!-- <div class="ep">18 / 18</div> -->
                                     <div class="comment">
@@ -197,6 +200,7 @@
                                     </div>
                                     <div class="view"><i class="fa fa-eye"></i> ${val.trending}</div>
                                 </div>
+                                </a>
                                 <div class="product__item__text">
                                 <ul>
                                     <li>${val.categoryname}
@@ -239,6 +243,7 @@
                         $('#recent__product').append(
                             `<div class="col-lg-4 col-md-6 col-sm-6">
                             <div class="product__item">
+                            <a href="{{url('person_details')}}/${val.id}">
                                 <div class="product__item__pic set-bg" data-setbg="${val.image}" style="background-image:url('${val.image}')">
                                     <!-- <div class="ep">18 / 18</div> -->
                                     <div class="comment">
@@ -246,6 +251,7 @@
                                     </div>
                                     <div class="view"><i class="fa fa-eye"></i> ${val.trending}</div>
                                 </div>
+                                </a>
                                 <div class="product__item__text">
                                 <ul>
                                     <li>${val.categoryname}
@@ -315,10 +321,10 @@
                     // console.log(response.category);
                     $.each(response.topviewperson, function(prefix, val) {
                         $('#filter__gallery').append(
-                            `<div class="product__sidebar__view__item set-bg" data-setbg="${val.image}" style="background-image:url('${val.image}')">
+                            `<a href="{{url('person_details')}}/${val.id}"><div class="product__sidebar__view__item set-bg" data-setbg="${val.image}" style="background-image:url('${val.image}')">
                                 <div class="view"><i class="fa fa-eye"></i> ${val.trending}</div>
-                                <h5><a href="{{url('person_details')}}/${val.id}">${val.name}</a></h5>
-                            </div>`
+                                <h5 style="color: #ffffff;font-weight: 700;line-height: 26px;">${val.name}</h5>
+                            </div></a>`
                         );
                     });
                 } else {
@@ -347,10 +353,10 @@
                     $('#filter__gallery').html('');
                     $.each(response.topviewperson, function(prefix, val) {
                         $('#filter__gallery').append(
-                            `<div class="product__sidebar__view__item set-bg" data-setbg="${val.image}" style="background-image:url('${val.image}')">
+                            `<a href="{{url('person_details')}}/${val.id}"><div class="product__sidebar__view__item set-bg" data-setbg="${val.image}" style="background-image:url('${val.image}')">
                                 <div class="view"><i class="fa fa-eye"></i> ${val.trending}</div>
-                                <h5><a href="{{url('person_details')}}/${val.id}">${val.name}</a></h5>
-                            </div>`
+                                <h5 style="color: #ffffff;font-weight: 700;line-height: 26px;">${val.name}</h5>
+                            </div></a>`
                         );
                     });
                 } else {

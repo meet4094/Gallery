@@ -5,7 +5,7 @@
                 <div class="header__logo">
                     <a href="{{ url('/') }}">
                         <!-- <img src="{{asset('web/assets/img/logo.png')}}" alt=""> -->
-                        <h3 style="color: white; font-weight: 800; font-size: 25px;">Gall<span style="color: #e63334;">ery</span></h3>
+                        <h3 style="color: white; font-weight: 800; font-size: 25px;">Model<span style="color: #e63334;">wio</span></h3>
                     </a>
                 </div>
             </div>
@@ -18,7 +18,7 @@
                                 <ul class="dropdown" id="category_data">
                                 </ul>
                             </li>
-                            <li class="{{ @$title == 'blog' ? 'active' : '' }}"><a href="{{ url('/blog') }}">Our Blog</a></li>
+                            <!-- <li class="{{ @$title == 'blog' ? 'active' : '' }}"><a href="{{ url('/blog') }}">Our Blog</a></li> -->
                             <li class="{{ @$title == 'login' ? 'active' : '' }}"><a href="{{ url('/login') }}">Contacts</a></li>
                         </ul>
                     </nav>

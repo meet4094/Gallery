@@ -413,9 +413,9 @@ class Web extends Model
             $user = Socialite::driver('google')->user();
 
             $finduser = DB::table('users')->where('google_id', $user->id)->first();
-            echo '<pre>';
-            print_r($finduser);
-            die;
+            // echo '<pre>';
+            // print_r($finduser);
+            // die;
             if ($finduser) {
 
                 Auth::login($finduser);
