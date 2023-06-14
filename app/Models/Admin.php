@@ -18,6 +18,94 @@ class Admin extends Model
         return $data;
     }
 
+    public function slider_list()
+    {
+        $data = DB::table('slider_img')->where(array('is_del' => 0))
+            ->select('*')
+            ->get();
+        return DataTables::of($data)
+            ->addIndexColumn()
+            ->addColumn('imageurl', function ($row) {
+                $url = asset('images');
+                $images = '<a target="_blank" href="' . $url . '/' . $row->image . '" class="btn btn-link"><img src = "' . $url . '/' . $row->image . '"width=200px height=100px></a>';
+                return $images;
+            })
+            ->addColumn('action', function ($row) {
+                $update_btn = '<button title="' . $row->title . '" class="btn btn-link" onclick="edit_SliderImg(this)" data-val="' . $row->id . '"><i class="fas fa-edit"></i></button>';
+                $delete_btn = '<button data-toggle="modal" target="_blank"  title="' . $row->title . '" class="btn btn-link" onclick="editable_remove(this)" data-val="' . $row->id . '"><i class="fa fa-trash-alt tx-danger"></i></button>';
+                return $update_btn . $delete_btn;
+            })
+            ->rawColumns(['imageurl', 'action'])
+            ->make(true);
+    }
+
+    public function add_edit_slider($req)
+    {
+        if (empty($req->sliderImgId)) {
+            $rules = array(
+                'title' => 'required',
+                'image' => 'required',
+            );
+        } else {
+            $rules = array(
+                'title' => 'required',
+            );
+        }
+        $validator = Validator::make($req->all(), $rules);
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->toArray()]);
+        } else {
+            $iOriginal = DB::table('slider_img')->Where('id', $req->sliderImgId)->first();
+            if (isset($req->image) && $req->image->getError() == 0) {
+                if (isset($iOriginal->image) && !empty($iOriginal->image)) {
+
+                    $iSelfpicture = public_path('images') . '/' . $iOriginal->image;
+
+                    if (file_exists($iSelfpicture))
+
+                        @unlink($iSelfpicture);
+                }
+                $file = $req->image;
+                $extension = $file->extension();
+                $imagefileName = md5(uniqid() . time()) . '.' . $extension;
+                $file->move(public_path('images/'), $imagefileName);
+            } else {
+                $imagefileName = $iOriginal->image;
+            }
+            $data = array(
+                'title' => $req->title,
+                'image' => $imagefileName,
+            );
+            if (empty($req->sliderImgId)) {
+                $data['created_at'] = date('Y-m-d H:i');
+                DB::table('slider_img')->insert($data);
+                return response()->json(['st' => 'success', 'msg' => 'Slider Image has been added',]);
+            } else {
+                $data['updated_at'] = date('Y-m-d H:i');
+                DB::table('slider_img')->where('id', $req->sliderImgId)->update($data);
+                return response()->json(['st' => 'success', 'msg' => 'Slider Image update successfully']);
+            }
+        }
+    }
+
+    public function GetSliderData($req)
+    {
+        if (!empty($req)) {
+            $data = DB::table('slider_img')
+                ->where(array('id' => $req->sliderImgId))
+                ->select('*')
+                ->first();
+            $imagefileName = asset('images/' . $data->image);
+            $data = array(
+                'id' => $data->id,
+                'title' => $data->title,
+                'image' => $imagefileName,
+            );
+            $response = array('st' => "success", "msg" => $data);
+            return response()->json($response);
+        }
+    }
+
     public function category_list()
     {
         $data = DB::table('Category')->where(array('is_del' => 0))
@@ -67,6 +155,27 @@ class Admin extends Model
             $response = array('st' => "success", "msg" => $data);
             return response()->json($response);
         }
+    }
+
+    public function deleteSlider($req)
+    {
+        $sliderImgId = $req->post('sliderImgId');
+
+        $data = DB::table('slider_img')->where('id', $sliderImgId)->first();
+        $image_name = $data->image;
+        $image_path = public_path('images/' . $image_name);
+        if (file_exists($image_path)) {
+            unlink($image_path);
+        }
+        $job_data = DB::table('slider_img')->where('id', $sliderImgId)->delete();
+        if ($job_data) {
+            $response['success'] = 1;
+            $response['msg'] = 'Delete successfully';
+        } else {
+            $response['success'] = 0;
+            $response['msg'] = 'Failed to delete';
+        }
+        return $response;
     }
 
     public function deleteCategory($req)

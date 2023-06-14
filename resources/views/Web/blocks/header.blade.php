@@ -19,7 +19,7 @@
                                 </ul>
                             </li>
                             <!-- <li class="{{ @$title == 'blog' ? 'active' : '' }}"><a href="{{ url('/blog') }}">Our Blog</a></li> -->
-                            <li class="{{ @$title == 'login' ? 'active' : '' }}"><a href="{{ url('/login') }}">Contacts</a></li>
+                            <li class="{{ @$title == 'contacts' ? 'active' : '' }}"><a href="{{ url('/contacts') }}">Contacts</a></li>
                         </ul>
                     </nav>
                 </div>

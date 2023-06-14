@@ -22,20 +22,23 @@ use function PHPUnit\Framework\callback;
 Route::controller(WebController::class)->group(function () {
     Route::get('/', 'home')->name('home');
     Route::get('/categories', 'categories')->name('categories');
-    Route::post('/getAllPersondata', 'getAllPersondata');
     Route::post('/getCategorydata', 'getCategorydata');
+    Route::post('/getSliderdata', 'getSliderdata');
+    Route::post('/getAllPersondata', 'getAllPersondata');
     Route::post('/getRecentlyAddPersondata', 'getRecentlyAddPersondata');
     Route::post('/getTrendingPersondata', 'getTrendingPersondata');
     Route::post('/getTopViewPersondata', 'getTopViewPersondata');
     Route::post('/getCategoryByAnyPersondata', 'getCategoryByAnyPersondata');
     Route::get('/CategoryByPersonData/{id}', 'CategoryByPersonData');
     Route::get('/person_details/{id}', 'person_details');
+    Route::get('/contacts', 'contacts')->name('contacts');
     Route::get('/login', 'login')->name('login');
     Route::post('/sendcomment', 'sendcomment');
     Route::post('/getComment', 'getComment');
-    Route::get('/blog', 'blog')->name('blog');
+    // Route::post('/sendMessage', 'sendMessage');
+    // Route::get('/blog', 'blog')->name('blog');
     Route::post('/searchPerson', 'searchPerson');
-    
+
     Route::get('/login/google', 'loginGoogle');
     Route::get('/login/google/callback', 'callback');
 });
@@ -53,7 +56,14 @@ Route::controller(AuthController::class)->group(function () {
 // Auth::routes();
 Route::middleware([Authenticate::class])->group(function () {
     Route::controller(AdminController::class)->group(function () {
+        // Home
         Route::get('/admin/dashboard', 'dashboard')->name('dashboard');
+
+        // Slider
+        Route::get('/admin/slider_list', 'slider_list')->name('slider_list');
+        Route::post('/admin/add_edit_slider', 'add_edit_slider');
+        Route::post('/admin/GetSliderData', 'GetSliderData');
+        Route::post('/admin/deleteSlider', 'deleteSlider');
 
         // Category
         Route::get('/admin/category_list', 'category_list')->name('category_list');

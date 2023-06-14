@@ -3,42 +3,20 @@
 <section class="hero">
     <div class="container">
         <div class="hero__slider owl-carousel">
-            <div class="hero__items set-bg" data-setbg="{{asset('web/assets/img/hero/hero-1.jpg')}}">
+            @foreach($slider as $data)
+            <div class="hero__items set-bg" data-setbg="{{$data['image']}}" style="background-image:url('{{$data['image']}}')">
                 <div class="row">
                     <div class="col-lg-6">
                         <div class="hero__text">
                             <div class="label">Adventure</div>
-                            <h2>Fate / Stay Night: Unlimited Blade Works</h2>
+                            <h2>{{$data['title']}}</h2>
                             <p>After 30 days of travel across the world...</p>
                             <a href="#"><span>Watch Now</span> <i class="fa fa-angle-right"></i></a>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="hero__items set-bg" data-setbg="{{asset('web/assets/img/hero/hero-1.jpg')}}">
-                <div class="row">
-                    <div class="col-lg-6">
-                        <div class="hero__text">
-                            <div class="label">Adventure</div>
-                            <h2>Fate / Stay Night: Unlimited Blade Works</h2>
-                            <p>After 30 days of travel across the world...</p>
-                            <a href="#"><span>Watch Now</span> <i class="fa fa-angle-right"></i></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="hero__items set-bg" data-setbg="{{asset('web/assets/img/hero/hero-1.jpg')}}">
-                <div class="row">
-                    <div class="col-lg-6">
-                        <div class="hero__text">
-                            <div class="label">Adventure</div>
-                            <h2>Fate / Stay Night: Unlimited Blade Works</h2>
-                            <p>After 30 days of travel across the world...</p>
-                            <a href="#"><span>Watch Now</span> <i class="fa fa-angle-right"></i></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            @endforeach
         </div>
     </div>
 </section>
@@ -93,7 +71,7 @@
                         </ul>
                         <div class="filter__gallery" id="filter__gallery">
                         </div>
-                        <div class="product__sidebar__comment">
+                        <!-- <div class="product__sidebar__comment">
                             <div class="section-title">
                                 <h5>New Comment</h5>
                             </div>
@@ -112,7 +90,7 @@
                                     <span><i class="fa fa-eye"></i> 19.141 Viewes</span>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
@@ -248,7 +226,7 @@
                     $.each(response.topviewperson, function(prefix, val) {
                         $('#filter__gallery').append(
                             `<a href="{{url('person_details')}}/${val.id}">
-                                <div class="product__sidebar__view__item set-bg" data-setbg="${val.image}" style="background-image:url('${val.image}'); width: 100%;">
+                                <div class="product__sidebar__view__item set-bg" data-setbg="${val.image}" style="background-image:url('${val.image}'); width: 100%; background-position: center">
                                     <div class="view"><i class="fa fa-eye"></i> ${val.trending}</div>
                                     <h5 style="color: #ffffff;font-weight: 700;line-height: 26px;">${val.name}</h5>
                                 </div>

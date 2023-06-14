@@ -21,6 +21,40 @@ class AdminController extends Controller
         return view('Admin.dashboard', $data);
     }
 
+    public function slider_list(Request $req)
+    {
+        if ($req->ajax()) {
+            $data = $this->admin->slider_list();
+            return $data;
+        }
+        $data['title'] = 'slider_list';
+        return view('Admin.Master.slider_list', $data);
+    }
+
+    public function add_edit_slider(Request $req)
+    {
+        if (!empty($req)) {
+            $data = $this->admin->add_edit_slider($req);
+            return $data;
+        }
+    }
+
+    public function GetSliderData(Request $req)
+    {
+        if (!empty($req)) {
+            $data = $this->admin->GetSliderData($req);
+            return $data;
+        }
+    }
+
+    public function deleteSlider(Request $req)
+    {
+        if (!empty($req)) {
+            $msg = $this->admin->deleteSlider($req);
+            return response()->json($msg);
+        }
+    }
+
     public function category_list(Request $req)
     {
         if ($req->ajax()) {

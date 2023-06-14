@@ -17,6 +17,7 @@ class WebController extends Controller
 
     public function home(Request $req)
     {
+        $data['slider'] = $this->web->getSliderdata();
         $data['title'] = 'home';
         return view('Web.Master.home', $data);
     }
@@ -27,18 +28,24 @@ class WebController extends Controller
         return view('Web.Master.categories', $data);
     }
 
-    public function getAllPersondata(Request $req)
+    public function contacts()
     {
-        if ($req->ajax()) {
-            $data = $this->web->getAllPersondata($req);
-            return $data;
-        }
+        $data['title'] = 'contacts';
+        return view('Web.Master.contacts', $data);
     }
 
     public function getCategorydata(Request $req)
     {
         if ($req->ajax()) {
             $data = $this->web->getCategorydata();
+            return $data;
+        }
+    }
+
+    public function getAllPersondata(Request $req)
+    {
+        if ($req->ajax()) {
+            $data = $this->web->getAllPersondata($req);
             return $data;
         }
     }
@@ -99,6 +106,14 @@ class WebController extends Controller
     {
         if ($req->ajax()) {
             $data = $this->web->sendcomment($req);
+            return $data;
+        }
+    }
+
+    public function sendMessage(Request $req)
+    {
+        if ($req->ajax()) {
+            $data = $this->web->sendMessage($req);
             return $data;
         }
     }

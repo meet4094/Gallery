@@ -1892,10 +1892,10 @@ video {
 
 .login__form {
     position: relative;
-    padding-left: 145px;
+    padding-left: 45px;
 }
 
-.login__form:after {
+.login__register:after {
     position: absolute;
     right: -14px;
     top: -40px;
@@ -1918,7 +1918,7 @@ video {
     margin-bottom: 20px;
 }
 
-.login__form form .input__item:before {
+/* .login__form form .input__item:before {
     position: absolute;
     left: 50px;
     top: 10px;
@@ -1926,7 +1926,7 @@ video {
     width: 1px;
     background: #b7b7b7;
     content: "";
-}
+} */
 
 .login__form form .input__item input {
     height: 50px;
@@ -1935,7 +1935,8 @@ video {
     color: #b7b7b7;
     background: #ffffff;
     border: none;
-    padding-left: 76px;
+    padding-left: 15px;
+    border-radius: 5px;
 }
 
 .login__form form .input__item input::-webkit-input-placeholder {
@@ -1981,7 +1982,7 @@ video {
 }
 
 .login__register {
-    padding-left: 30px;
+    padding: 0px 130px;
 }
 
 .login__register h3 {

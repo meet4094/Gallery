@@ -22,6 +22,22 @@ class Web extends Model
         return response()->json(['st' => 'success', 'category' => $data]);
     }
 
+    // Slider Img
+    public function getSliderdata()
+    {
+        $data = DB::table('slider_img')->where(array('is_del' => 0))->get();
+        $slider = array();
+        foreach ($data as $sliderimg) {
+            $imagefileName = asset('images/' . $sliderimg->image);
+            $slider[] = array(
+                'id' => $sliderimg->id,
+                'title' => $sliderimg->title,
+                'image' => $imagefileName,
+            );
+        }
+        return $slider;
+    }
+
     //All Person Data
     public function getAllPersondata($req)
     {
@@ -356,6 +372,34 @@ class Web extends Model
             return response()->json(['st' => 'success', 'msg' => 'Comment has been added',]);
         }
     }
+
+    // Add Message
+    // function sendMessage($req)
+    // {
+    //     $rules = array(
+    //         'name' => 'required',
+    //         'title' => 'required',
+    //     );
+    //     $validator = Validator::make($req->all(), $rules);
+    //     if ($validator->fails()) {
+    //         return response()->json(['error' => $validator->errors()->toArray()]);
+    //     } else {
+    //         $login = Auth::User();
+    //         if (!empty($login)) {
+    //             return response()->json(['st' => 'success', 'msg' => 'Please Login']);
+    //         } else {
+    //             $data = array(
+    //                 'user_id' => '',
+    //                 'name' => $req->name,
+    //                 'title' => $req->title,
+    //                 'message' => $req->message,
+    //             );
+    //             $data['created_at'] = date('Y-m-d H:i');
+    //             DB::table('comment')->insert($data);
+    //             return response()->json(['st' => 'success', 'msg' => 'Message has been sent',]);
+    //         }
+    //     }
+    // }
 
     // Get Comment
     function getComment($req)

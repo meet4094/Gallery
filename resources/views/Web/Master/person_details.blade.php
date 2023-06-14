@@ -171,6 +171,7 @@
                 </div>
             </div>
         </div>
+    </div>
 </section>
 <!-- Anime Section End -->
 @endsection
@@ -219,7 +220,7 @@
                     // console.log(response);
                     $.each(response.CategoryByAnyPersondata, function(prefix, val) {
                         $('#filter__gallery').append(
-                            `<a href="{{url('person_details')}}/${val.id}"><div class="product__sidebar__view__item set-bg" data-setbg="${val.image}" style="background-image:url('${val.image}')">
+                            `<a href="{{url('person_details')}}/${val.id}"><div class="product__sidebar__view__item set-bg" data-setbg="${val.image}" style="background-image:url('${val.image}');background-position: center">
                                 <div class="view"><i class="fa fa-eye"></i> ${val.trending}</div>
                                 <h5 style="color: #ffffff;font-weight: 700;line-height: 26px;">${val.name}</h5>
                             </div></a>`

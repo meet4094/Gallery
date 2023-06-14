@@ -58,7 +58,7 @@
                         <div class="filter__gallery" id="filter__gallery">
                         </div>
                     </div>
-                    <div class="product__sidebar__comment">
+                    <!-- <div class="product__sidebar__comment">
                         <div class="section-title">
                             <h5>New Comment</h5>
                         </div>
@@ -75,7 +75,7 @@
                                 <span><i class="fa fa-eye"></i> 19.141 Viewes</span>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>
@@ -321,7 +321,7 @@
                     // console.log(response.category);
                     $.each(response.topviewperson, function(prefix, val) {
                         $('#filter__gallery').append(
-                            `<a href="{{url('person_details')}}/${val.id}"><div class="product__sidebar__view__item set-bg" data-setbg="${val.image}" style="background-image:url('${val.image}')">
+                            `<a href="{{url('person_details')}}/${val.id}"><div class="product__sidebar__view__item set-bg" data-setbg="${val.image}" style="background-image:url('${val.image}'); background-position: center">
                                 <div class="view"><i class="fa fa-eye"></i> ${val.trending}</div>
                                 <h5 style="color: #ffffff;font-weight: 700;line-height: 26px;">${val.name}</h5>
                             </div></a>`

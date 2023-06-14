@@ -13,6 +13,10 @@
             <li class="nav-item {{ @$title == 'dashboard' ? 'active' : '' }}">
                 <a class="nav-link" href="{{ url('/admin/dashboard') }}"><i class="fa fa-home"></i><span class="sidemenu-label">Home</span></a>
             </li>
+            <li class="nav-label">Slider</li>
+            <li class="nav-item {{ @$title == 'slider_list' ? 'active' : '' }}">
+                <a class="nav-link" href="{{ url('/admin/slider_list') }}"><i class="fa fa-home"></i><span class="sidemenu-label">Images</span></a>
+            </li>
             <li class="nav-label">Master</li>
             <li class="nav-item {{ @$title == 'category_list' ? 'active' : '' }}">
                 <a class="nav-link" href="{{ url('admin/category_list') }}"><i class="fa-brands fa-docker"></i><span class="sidemenu-label">Add Category</span></a>
