@@ -4,7 +4,7 @@
     <div class="container">
         <div class="hero__slider owl-carousel">
             @foreach($slider as $data)
-            <div class="hero__items set-bg" data-setbg="{{$data['image']}}" style="background-image:url('{{$data['image']}}')">
+            <div class="hero__items set-bg" data-setbg="{{$data['image']}}">
                 <div class="row">
                     <div class="col-lg-6">
                         <div class="hero__text">
