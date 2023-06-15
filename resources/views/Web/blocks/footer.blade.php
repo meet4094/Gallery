@@ -14,8 +14,8 @@
                     <ul>
                         <li class="active"><a href="/">Homepage</a></li>
                         <li><a href="/categories">Categories</a></li>
-                        <li><a href="/blog">Our Blog</a></li>
-                        <li><a href="/login">Contacts</a></li>
+                        <!-- <li><a href="/blog">Our Blog</a></li> -->
+                        <li><a href="/contacts">Contacts</a></li>
                     </ul>
                 </div>
             </div>
@@ -42,7 +42,7 @@
         <div class="search-close-switch"><i class="icon_close"></i></div>
         <form action="{{url ('/searchPerson')}}" id="cform" method="post" enctype="multipart/form-data" class="search-model-form">
             @csrf
-            <input type="text" name="name" id="search-input" placeholder="Search here....." />
+            <input type="text" name="search" id="search-input" placeholder="Search here....." />
             <!-- <button hidden type="submit" class="search-switch"><span class="icon_search"></span></button> -->
         </form>
     </div>

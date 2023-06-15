@@ -4,14 +4,14 @@
     <div class="container">
         <div class="hero__slider owl-carousel">
             @foreach($slider as $data)
-            <div class="hero__items set-bg" data-setbg="{{$data['image']}}">
+            <div class="hero__items set-bg" data-setbg="{{$data['image']}}" style="background-position: center;">
                 <div class="row">
                     <div class="col-lg-6">
                         <div class="hero__text">
-                            <div class="label">Adventure</div>
+                            <!-- <div class="label">Adventure</div> -->
                             <h2>{{$data['title']}}</h2>
-                            <p>After 30 days of travel across the world...</p>
-                            <a href="#"><span>Watch Now</span> <i class="fa fa-angle-right"></i></a>
+                            <!-- <p>After 30 days of travel across the world...</p> -->
+                            <!-- <a href="#"><span>Watch Now</span> <i class="fa fa-angle-right"></i></a> -->
                         </div>
                     </div>
                 </div>
@@ -292,9 +292,15 @@
             processData: false,
             data: formdata ? formdata : form.serialize(),
             success: function(response) {
-                console.log(response);
                 if (response.st == 'success') {
+                    console.log(response);
                     $('#trending__product').html('');
+                    $('#recent__product').html('');
+                    if (response.trendingperson == '') {
+                        $('#trending__product').append(
+                            `<div style="color:white">Data not found</div>`
+                        )
+                    }
                     $.each(response.trendingperson, function(prefix, val) {
                         $('#trending__product').append(
                             `<div class="col-lg-4 col-md-6 col-sm-6">
@@ -320,7 +326,40 @@
                         </div>`
                         );
                     });
-                } else {}
+                    if (response.recentlyperson == '') {
+                        $('#recent__product').append(
+                            `<div style="color:white">Data not found</div>`
+                        )
+                    }
+                    $.each(response.recentlyperson, function(prefix, val) {
+                        $('#recent__product').append(
+                            `<div class="col-lg-4 col-md-6 col-sm-6">
+                            <div class="product__item">
+                            <a href="{{url('person_details')}}/${val.id}">
+                                <div class="product__item__pic set-bg" data-setbg="${val.image}" style="background-image:url('${val.image}')">
+                                    <!-- <div class="ep">18 / 18</div> -->
+                                    <div class="comment">
+                                        <!-- <i class="fa fa-comments"></i> 11 -->
+                                    </div>
+                                    <div class="view"><i class="fa fa-eye"></i> ${val.trending}</div>
+                                </div>
+                                </a>
+                                <div class="product__item__text">
+                                <ul>
+                                    <li>${val.categoryname}
+                                    </li>
+                                </ul> 
+                                    <h5>
+                                        <a href="{{url('person_details')}}/${val.id}">${val.name}</a>
+                                    </h5>
+                                </div>
+                            </div>
+                        </div>`
+                        );
+                    });
+                } else {
+                    alert('failed');
+                }
             },
             error: function() {
                 alert('Error');

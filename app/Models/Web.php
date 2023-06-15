@@ -38,7 +38,7 @@ class Web extends Model
         return $slider;
     }
 
-    //All Person Data
+    // All Person Data
     public function getAllPersondata($req)
     {
         $builder = DB::table('person');
@@ -47,7 +47,7 @@ class Web extends Model
         }
         $PData = $builder->count('id');
         $pageId = $req->pageId ? $req->pageId : 0;
-        $limit = 1;
+        $limit = 10;
         $PData = $PData / $limit;
 
         $lastpage = '';
@@ -216,8 +216,141 @@ class Web extends Model
         return response()->json(['st' => 'success', 'topviewperson' => $topviewperson]);
     }
 
+    // Search Person Data
+    public function searchPerson($req)
+    {
+        // allperson
+        $builder = DB::table('person');
+        if (isset($req->search)) {
+            $builder->where(array('name' => $req->search));
+        }
+        if (isset($req->cid)) {
+            $builder->where(array('category_id' => $req->cid));
+        }
+        $PData = $builder->count('id');
+        $pageId = $req->pageId ? $req->pageId : 0;
+        $limit = 10;
+        $PData = $PData / $limit;
+
+        $lastpage = '';
+        if ($PData < $req->pageId) {
+            $start = $pageId * 1 - 2;
+            if ($PData < $req->pageId) {
+                $lastpage = '';
+            } else {
+                $lastpage = $req->pageId - 1;
+            }
+        } else {
+            $start = $pageId * 1 - 1;
+        }
+
+        if ($PData > 1) {
+            if ($PData <= 5) {
+                $PdataCount = $PData;
+            } else {
+                $PdataCount = 5;
+            }
+        } else {
+            $PdataCount = 1;
+        }
+
+        $builder = DB::table('person as p');
+        $builder->where(array('p.is_del' => 0));
+        if (isset($req->cid)) {
+            $builder->where(array('p.category_id' => $req->cid));
+        }
+        if (isset($req->search)) {
+            $builder->where(array('p.name' => $req->search));
+        }
+        $builder->join('category as c', 'c.id', 'p.category_id');
+        $builder->select('p.id', 'p.name', 'p.image', 'p.trending', 'c.name as categoryname');
+        if (isset($req->pageId)) {
+            $builder->skip($start);
+            $builder->limit($limit);
+        } else {
+            $builder->skip(0);
+            $builder->limit($limit);
+        }
+
+        if ($req->filterId == 1) {
+            $builder->orderBy('p.name');
+            $builder->skip($start);
+            $builder->limit($limit);
+        } else if ($req->filterId == 2) {
+            $builder->limit($limit);
+            $PdataCount = $PData / 10;
+        } else if ($req->filterId == 3) {
+            $builder->skip(10);
+            $builder->limit(50);
+            $PdataCount = $PData / 40;
+        }
+        $data = $builder->get();
+
+        $allperson = array();
+        foreach ($data as $persondata) {
+            $imagefileName = asset('images/' . $persondata->image);
+            $allperson[] = array(
+                'id' => $persondata->id,
+                'name' => $persondata->name,
+                'image' => $imagefileName,
+                'trending' => $persondata->trending,
+                'categoryname' => $persondata->categoryname
+            );
+        }
+
+        // trendingperson
+        $builder = DB::table('person as p');
+        $builder->where(array('p.is_del' => 0));
+        $builder->where('p.name', 'LIKE', "%{$req->search}%");
+        $builder->orderBy('p.trending', 'desc');
+        $builder->join('category as c', 'c.id', 'p.category_id');
+        $builder->select('p.id', 'p.name', 'p.image', 'p.trending', 'c.name as categoryname');
+        $data = $builder->get();
+        $trendingperson = array();
+        foreach ($data as $persondata) {
+            $imagefileName = asset('images/' . $persondata->image);
+            $trendingperson[] = array(
+                'id' => $persondata->id,
+                'name' => $persondata->name,
+                'image' => $imagefileName,
+                'trending' => $persondata->trending,
+                'categoryname' => $persondata->categoryname,
+            );
+        }
+
+        // recentlyperson
+        $builder = DB::table('person as p');
+        $builder->where(array('p.is_del' => 0));
+        $builder->where('p.name', 'LIKE', "%{$req->search}%");
+        $builder->orderBy('p.id', 'desc');
+        $builder->join('category as c', 'c.id', 'p.category_id');
+        $builder->select('p.id', 'p.name', 'p.image', 'p.trending', 'c.name as categoryname');
+        $data = $builder->get();
+        $recentlyperson = array();
+        foreach ($data as $persondata) {
+            $imagefileName = asset('images/' . $persondata->image);
+            $recentlyperson[] = array(
+                'id' => $persondata->id,
+                'name' => $persondata->name,
+                'image' => $imagefileName,
+                'trending' => $persondata->trending,
+                'categoryname' => $persondata->categoryname,
+            );
+        }
+
+        return response()->json(['st' => 'success', 'trendingperson' => $trendingperson, 'recentlyperson' => $recentlyperson, 'PdataCount' => $PdataCount, 'lastpage' => $lastpage, 'allperson' => $allperson]);
+    }
+
     public function CategoryByPersonData($req)
     {
+        // $builder = DB::table('person');
+        // $builder->where(array('category_id' => $req));
+        // $PData = $builder->count('id');
+        // $limit = 1;
+        // $PData = $PData / $limit;
+        // print_r($PData);
+        // die;
+
         $builder = DB::table('person as p');
         $builder->where(array('p.is_del' => 0));
         $builder->where('p.category_id', '=', $req);
@@ -372,34 +505,6 @@ class Web extends Model
             return response()->json(['st' => 'success', 'msg' => 'Comment has been added',]);
         }
     }
-
-    // Add Message
-    // function sendMessage($req)
-    // {
-    //     $rules = array(
-    //         'name' => 'required',
-    //         'title' => 'required',
-    //     );
-    //     $validator = Validator::make($req->all(), $rules);
-    //     if ($validator->fails()) {
-    //         return response()->json(['error' => $validator->errors()->toArray()]);
-    //     } else {
-    //         $login = Auth::User();
-    //         if (!empty($login)) {
-    //             return response()->json(['st' => 'success', 'msg' => 'Please Login']);
-    //         } else {
-    //             $data = array(
-    //                 'user_id' => '',
-    //                 'name' => $req->name,
-    //                 'title' => $req->title,
-    //                 'message' => $req->message,
-    //             );
-    //             $data['created_at'] = date('Y-m-d H:i');
-    //             DB::table('comment')->insert($data);
-    //             return response()->json(['st' => 'success', 'msg' => 'Message has been sent',]);
-    //         }
-    //     }
-    // }
 
     // Get Comment
     function getComment($req)
