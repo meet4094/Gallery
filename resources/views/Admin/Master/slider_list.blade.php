@@ -100,20 +100,10 @@
 @endsection
 @section('scripts')
 <script type="text/javascript">
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    });
-
     $('#toggler').on('click', function() {
         $('#sliderImgId').val('');
         document.getElementById("cform").reset();
         $('.modal-title').html('Add Slider Image');
-    });
-
-    $(document).ready(function() {
-        load_data();
     });
 
     function load_data(filter_data = '') {
@@ -191,14 +181,16 @@
 
     function edit_SliderImg(edit_employee) {
         var sliderImgId = $(edit_employee).data('val');
+        var tableName = $(edit_employee).data('table');
         $.ajax({
             type: 'POST',
-            url: "{{ url('/admin/GetSliderData') }}",
+            url: "{{ url('/admin/GetData') }}",
             data: {
-                sliderImgId: sliderImgId
+                sliderImgId: sliderImgId,
+                tableName: tableName
             },
             success: function(response) {
-                console.log(response);
+                // console.log(response);
                 if (response.st == 'success') {
                     $('#image').html('');
                     $('#add_edit_slider').modal('show');
@@ -217,45 +209,6 @@
                 alert('Error');
             }
         });
-    }
-
-    function editable_remove(data_edit) {
-        var type = 'Remove';
-        var sliderImgId = $(data_edit).data('val');
-        var ot_title = $(data_edit).attr('title');
-        Swal.fire({
-            title: 'Are you sure want to delete model : ' + ot_title + ' ?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it!'
-        }).then((result) => {
-            if (result.value) {
-                $.ajax({
-                    url: "{{ url('/admin/deleteSlider') }}",
-                    type: 'post',
-                    data: {
-                        sliderImgId: sliderImgId
-                    },
-                    success: function(response) {
-                        if (response.success == 1) {
-                            Swal.fire(
-                                'Deleted!',
-                                'Your data has been deleted.',
-                                'success'
-                            )
-                            $('.data-table').DataTable().ajax.reload();
-                        } else {
-                            alert("Failed");
-                        }
-                    }
-                });
-            } else {
-                swal.fire("Cancelled", "Your data is safe", "error");
-
-            }
-        })
     }
 </script>
 @endsection

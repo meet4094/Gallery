@@ -15,14 +15,14 @@ use Exception;
 
 class Web extends Model
 {
-    // Category
+    // Category Data
     public function getCategorydata()
     {
         $data = DB::table('category')->where(array('is_del' => 0))->get();
         return response()->json(['st' => 'success', 'category' => $data]);
     }
 
-    // Slider Img
+    // Slider Img Data
     public function getSliderdata()
     {
         $data = DB::table('slider_img')->where(array('is_del' => 0))->get();
@@ -38,136 +38,134 @@ class Web extends Model
         return $slider;
     }
 
-    // All Person Data
+    // Person Data
     public function getAllPersondata($req)
     {
-        $builder = DB::table('person');
-        if (isset($req->cid)) {
-            $builder->where(array('category_id' => $req->cid));
-        }
-        $PData = $builder->count('id');
-        $pageId = $req->pageId ? $req->pageId : 0;
-        $limit = 10;
-        $PData = $PData / $limit;
-
-        $lastpage = '';
-        if ($PData < $req->pageId) {
-            $start = $pageId * 1 - 2;
-            if ($PData < $req->pageId) {
-                $lastpage = '';
-            } else {
-                $lastpage = $req->pageId - 1;
+        $limit = 1;
+        // Recently Person Data ------ Home Page
+        {
+            $builder = DB::table('person as p');
+            $builder->where(array('p.is_del' => 0));
+            if (isset($req->name)) {
+                $builder->where('p.name', 'LIKE', "%{$req->name}%");
             }
-        } else {
-            $start = $pageId * 1 - 1;
-        }
-
-        if ($PData > 1) {
-            if ($PData <= 5) {
-                $PdataCount = $PData;
-            } else {
-                $PdataCount = 5;
+            $builder->join('category as c', 'c.id', 'p.category_id');
+            $builder->select('p.id', 'p.name', 'p.image', 'p.trending', 'c.name as categoryname');
+            $builder->limit($limit);
+            $builder->orderBy('p.id', 'desc');
+            $data = $builder->get();
+            $recentlyperson = array();
+            foreach ($data as $persondata) {
+                $imagefileName = asset('images/' . $persondata->image);
+                $recentlyperson[] = array(
+                    'id' => $persondata->id,
+                    'name' => $persondata->name,
+                    'image' => $imagefileName,
+                    'trending' => $persondata->trending,
+                    'categoryname' => $persondata->categoryname,
+                );
             }
-        } else {
-            $PdataCount = 1;
         }
 
-        $builder = DB::table('person as p');
-        $builder->where(array('p.is_del' => 0));
-        if (isset($req->cid)) {
-            $builder->where(array('p.category_id' => $req->cid));
-        }
-        $builder->join('category as c', 'c.id', 'p.category_id');
-        $builder->select('p.id', 'p.name', 'p.image', 'p.trending', 'c.name as categoryname');
-        if (isset($req->pageId)) {
-            $builder->skip($start);
+        // Trending Person Data ------ Home Page
+        {
+            $builder = DB::table('person as p');
+            $builder->where(array('p.is_del' => 0));
+            if (isset($req->name)) {
+                $builder->where('p.name', 'LIKE', "%{$req->name}%");
+            }
+            $builder->join('category as c', 'c.id', 'p.category_id');
+            $builder->select('p.id', 'p.name', 'p.image', 'p.trending', 'c.name as categoryname');
+            $builder->orderBy('p.trending', 'desc');
             $builder->limit($limit);
-        } else {
-            $builder->skip(0);
-            $builder->limit($limit);
+            $data = $builder->get();
+            $trendingperson = array();
+            foreach ($data as $persondata) {
+                $imagefileName = asset('images/' . $persondata->image);
+                $trendingperson[] = array(
+                    'id' => $persondata->id,
+                    'name' => $persondata->name,
+                    'image' => $imagefileName,
+                    'trending' => $persondata->trending,
+                    'categoryname' => $persondata->categoryname,
+                );
+            }
         }
 
-        if ($req->filterId == 1) {
+        // All Person Data ----  Categories Page
+        {
+            $builder = DB::table('person');
+            if (isset($req->cid)) {
+                $builder->where(array('category_id' => $req->cid));
+            }
+            $PCount = $builder->count('id');
+            $pageId = $req->pageId ? $req->pageId : 0;
+            $PDataCount = $PCount / $limit;
+
+            $lastpage = '';
+            if ($PDataCount < $req->pageId) {
+                $start = $pageId * 1 - 2;
+                if ($PDataCount < $req->pageId) {
+                    $lastpage = '';
+                } else {
+                    $lastpage = $req->pageId - 1;
+                }
+            } else {
+                $start = $pageId * 1 - 1;
+            }
+
+            if ($PDataCount > 1) {
+                if ($PDataCount <= 5) {
+                    $PDataCount = $PDataCount;
+                } else {
+                    $PDataCount = 5;
+                }
+            } else {
+                $PDataCount = 1;
+            }
+
+            $builder = DB::table('person as p');
+            $builder->where(array('p.is_del' => 0));
+            if (isset($req->cid)) {
+                $builder->where(array('p.category_id' => $req->cid));
+            }
+            $builder->join('category as c', 'c.id', 'p.category_id');
+            $builder->select('p.id', 'p.name', 'p.image', 'p.trending', 'c.name as categoryname');
             $builder->orderBy('p.name');
-            $builder->skip($start);
+            if (isset($req->pageId)) {
+                $builder->orderBy('p.name');
+                $builder->skip($start);
+            } else {
+                $builder->skip(0);
+            }
+
+            if ($req->filterId == 1) {
+                $builder->orderBy('p.name');
+                $builder->skip($start);
+            } else if ($req->filterId == 2) {
+                $PDataCount = $PDataCount / 10;
+            } else if ($req->filterId == 3) {
+                $builder->skip(10);
+                $PDataCount = $PDataCount / 40;
+                $limit = 50;
+            }
             $builder->limit($limit);
-        } else if ($req->filterId == 2) {
-            $builder->limit($limit);
-            $PdataCount = $PData / 10;
-        } else if ($req->filterId == 3) {
-            $builder->skip(10);
-            $builder->limit(50);
-            $PdataCount = $PData / 40;
-        }
-        $data = $builder->get();
+            $data = $builder->get();
 
-        $recentlyperson = array();
-        foreach ($data as $persondata) {
-            $imagefileName = asset('images/' . $persondata->image);
-            $recentlyperson[] = array(
-                'id' => $persondata->id,
-                'name' => $persondata->name,
-                'image' => $imagefileName,
-                'trending' => $persondata->trending,
-                'categoryname' => $persondata->categoryname
-            );
+            $allperson = array();
+            foreach ($data as $persondata) {
+                $imagefileName = asset('images/' . $persondata->image);
+                $allperson[] = array(
+                    'id' => $persondata->id,
+                    'name' => $persondata->name,
+                    'image' => $imagefileName,
+                    'trending' => $persondata->trending,
+                    'categoryname' => $persondata->categoryname
+                );
+            }
         }
 
-        return response()->json(['st' => 'success', 'PdataCount' => $PdataCount, 'lastpage' => $lastpage, 'recentlyperson' => $recentlyperson]);
-    }
-
-    // Trending Person Data
-    public function getTrendingPersondata($req)
-    {
-        $builder = DB::table('person as p');
-        $builder->where(array('p.is_del' => 0));
-        if (isset($req->name)) {
-            $builder->where('p.name', 'LIKE', "%{$req->name}%");
-        }
-        $builder->orderBy('p.trending', 'desc');
-        $builder->join('category as c', 'c.id', 'p.category_id');
-        $builder->select('p.id', 'p.name', 'p.image', 'p.trending', 'c.name as categoryname');
-        $data = $builder->get();
-        $trendingperson = array();
-        foreach ($data as $persondata) {
-            $imagefileName = asset('images/' . $persondata->image);
-            $trendingperson[] = array(
-                'id' => $persondata->id,
-                'name' => $persondata->name,
-                'image' => $imagefileName,
-                'trending' => $persondata->trending,
-                'categoryname' => $persondata->categoryname,
-            );
-        }
-
-        return response()->json(['st' => 'success', 'trendingperson' => $trendingperson]);
-    }
-
-    //Recently Add Person Data
-    public function getRecentlyAddPersondata($req)
-    {
-        $builder = DB::table('person as p');
-        $builder->where(array('p.is_del' => 0));
-        if (isset($req->name)) {
-            $builder->where('p.name', 'LIKE', "%{$req->name}%");
-        }
-        $builder->orderBy('p.id', 'desc');
-        $builder->join('category as c', 'c.id', 'p.category_id');
-        $builder->select('p.id', 'p.name', 'p.image', 'p.trending', 'c.name as categoryname');
-        $data = $builder->get();
-        $recentlyperson = array();
-        foreach ($data as $persondata) {
-            $imagefileName = asset('images/' . $persondata->image);
-            $recentlyperson[] = array(
-                'id' => $persondata->id,
-                'name' => $persondata->name,
-                'image' => $imagefileName,
-                'trending' => $persondata->trending,
-                'categoryname' => $persondata->categoryname,
-            );
-        }
-
-        return response()->json(['st' => 'success', 'recentlyperson' => $recentlyperson]);
+        return response()->json(['st' => 'success', 'recentlyperson' => $recentlyperson, 'trendingperson' => $trendingperson, 'allperson' => $allperson, 'PdataCount' => $PDataCount, 'lastpage' => $lastpage,]);
     }
 
     // Top View Person Data
@@ -216,130 +214,130 @@ class Web extends Model
         return response()->json(['st' => 'success', 'topviewperson' => $topviewperson]);
     }
 
-    // Search Person Data
-    public function searchPerson($req)
-    {
-        // allperson
-        $builder = DB::table('person');
-        if (isset($req->search)) {
-            $builder->where(array('name' => $req->search));
-        }
-        if (isset($req->cid)) {
-            $builder->where(array('category_id' => $req->cid));
-        }
-        $PData = $builder->count('id');
-        $pageId = $req->pageId ? $req->pageId : 0;
-        $limit = 10;
-        $PData = $PData / $limit;
+    // // Search Person Data
+    // public function searchPerson($req)
+    // {
+    //     // allperson
+    //     $builder = DB::table('person');
+    //     if (isset($req->search)) {
+    //         $builder->where(array('name' => $req->search));
+    //     }
+    //     if (isset($req->cid)) {
+    //         $builder->where(array('category_id' => $req->cid));
+    //     }
+    //     $PData = $builder->count('id');
+    //     $pageId = $req->pageId ? $req->pageId : 0;
+    //     $limit = 10;
+    //     $PData = $PData / $limit;
 
-        $lastpage = '';
-        if ($PData < $req->pageId) {
-            $start = $pageId * 1 - 2;
-            if ($PData < $req->pageId) {
-                $lastpage = '';
-            } else {
-                $lastpage = $req->pageId - 1;
-            }
-        } else {
-            $start = $pageId * 1 - 1;
-        }
+    //     $lastpage = '';
+    //     if ($PData < $req->pageId) {
+    //         $start = $pageId * 1 - 2;
+    //         if ($PData < $req->pageId) {
+    //             $lastpage = '';
+    //         } else {
+    //             $lastpage = $req->pageId - 1;
+    //         }
+    //     } else {
+    //         $start = $pageId * 1 - 1;
+    //     }
 
-        if ($PData > 1) {
-            if ($PData <= 5) {
-                $PdataCount = $PData;
-            } else {
-                $PdataCount = 5;
-            }
-        } else {
-            $PdataCount = 1;
-        }
+    //     if ($PData > 1) {
+    //         if ($PData <= 5) {
+    //             $PdataCount = $PData;
+    //         } else {
+    //             $PdataCount = 5;
+    //         }
+    //     } else {
+    //         $PdataCount = 1;
+    //     }
 
-        $builder = DB::table('person as p');
-        $builder->where(array('p.is_del' => 0));
-        if (isset($req->cid)) {
-            $builder->where(array('p.category_id' => $req->cid));
-        }
-        if (isset($req->search)) {
-            $builder->where(array('p.name' => $req->search));
-        }
-        $builder->join('category as c', 'c.id', 'p.category_id');
-        $builder->select('p.id', 'p.name', 'p.image', 'p.trending', 'c.name as categoryname');
-        if (isset($req->pageId)) {
-            $builder->skip($start);
-            $builder->limit($limit);
-        } else {
-            $builder->skip(0);
-            $builder->limit($limit);
-        }
+    //     $builder = DB::table('person as p');
+    //     $builder->where(array('p.is_del' => 0));
+    //     if (isset($req->cid)) {
+    //         $builder->where(array('p.category_id' => $req->cid));
+    //     }
+    //     if (isset($req->search)) {
+    //         $builder->where(array('p.name' => $req->search));
+    //     }
+    //     $builder->join('category as c', 'c.id', 'p.category_id');
+    //     $builder->select('p.id', 'p.name', 'p.image', 'p.trending', 'c.name as categoryname');
+    //     if (isset($req->pageId)) {
+    //         $builder->skip($start);
+    //         $builder->limit($limit);
+    //     } else {
+    //         $builder->skip(0);
+    //         $builder->limit($limit);
+    //     }
 
-        if ($req->filterId == 1) {
-            $builder->orderBy('p.name');
-            $builder->skip($start);
-            $builder->limit($limit);
-        } else if ($req->filterId == 2) {
-            $builder->limit($limit);
-            $PdataCount = $PData / 10;
-        } else if ($req->filterId == 3) {
-            $builder->skip(10);
-            $builder->limit(50);
-            $PdataCount = $PData / 40;
-        }
-        $data = $builder->get();
+    //     if ($req->filterId == 1) {
+    //         $builder->orderBy('p.name');
+    //         $builder->skip($start);
+    //         $builder->limit($limit);
+    //     } else if ($req->filterId == 2) {
+    //         $builder->limit($limit);
+    //         $PdataCount = $PData / 10;
+    //     } else if ($req->filterId == 3) {
+    //         $builder->skip(10);
+    //         $builder->limit(50);
+    //         $PdataCount = $PData / 40;
+    //     }
+    //     $data = $builder->get();
 
-        $allperson = array();
-        foreach ($data as $persondata) {
-            $imagefileName = asset('images/' . $persondata->image);
-            $allperson[] = array(
-                'id' => $persondata->id,
-                'name' => $persondata->name,
-                'image' => $imagefileName,
-                'trending' => $persondata->trending,
-                'categoryname' => $persondata->categoryname
-            );
-        }
+    //     $allperson = array();
+    //     foreach ($data as $persondata) {
+    //         $imagefileName = asset('images/' . $persondata->image);
+    //         $allperson[] = array(
+    //             'id' => $persondata->id,
+    //             'name' => $persondata->name,
+    //             'image' => $imagefileName,
+    //             'trending' => $persondata->trending,
+    //             'categoryname' => $persondata->categoryname
+    //         );
+    //     }
 
-        // trendingperson
-        $builder = DB::table('person as p');
-        $builder->where(array('p.is_del' => 0));
-        $builder->where('p.name', 'LIKE', "%{$req->search}%");
-        $builder->orderBy('p.trending', 'desc');
-        $builder->join('category as c', 'c.id', 'p.category_id');
-        $builder->select('p.id', 'p.name', 'p.image', 'p.trending', 'c.name as categoryname');
-        $data = $builder->get();
-        $trendingperson = array();
-        foreach ($data as $persondata) {
-            $imagefileName = asset('images/' . $persondata->image);
-            $trendingperson[] = array(
-                'id' => $persondata->id,
-                'name' => $persondata->name,
-                'image' => $imagefileName,
-                'trending' => $persondata->trending,
-                'categoryname' => $persondata->categoryname,
-            );
-        }
+    //     // trendingperson
+    //     $builder = DB::table('person as p');
+    //     $builder->where(array('p.is_del' => 0));
+    //     $builder->where('p.name', 'LIKE', "%{$req->search}%");
+    //     $builder->orderBy('p.trending', 'desc');
+    //     $builder->join('category as c', 'c.id', 'p.category_id');
+    //     $builder->select('p.id', 'p.name', 'p.image', 'p.trending', 'c.name as categoryname');
+    //     $data = $builder->get();
+    //     $trendingperson = array();
+    //     foreach ($data as $persondata) {
+    //         $imagefileName = asset('images/' . $persondata->image);
+    //         $trendingperson[] = array(
+    //             'id' => $persondata->id,
+    //             'name' => $persondata->name,
+    //             'image' => $imagefileName,
+    //             'trending' => $persondata->trending,
+    //             'categoryname' => $persondata->categoryname,
+    //         );
+    //     }
 
-        // recentlyperson
-        $builder = DB::table('person as p');
-        $builder->where(array('p.is_del' => 0));
-        $builder->where('p.name', 'LIKE', "%{$req->search}%");
-        $builder->orderBy('p.id', 'desc');
-        $builder->join('category as c', 'c.id', 'p.category_id');
-        $builder->select('p.id', 'p.name', 'p.image', 'p.trending', 'c.name as categoryname');
-        $data = $builder->get();
-        $recentlyperson = array();
-        foreach ($data as $persondata) {
-            $imagefileName = asset('images/' . $persondata->image);
-            $recentlyperson[] = array(
-                'id' => $persondata->id,
-                'name' => $persondata->name,
-                'image' => $imagefileName,
-                'trending' => $persondata->trending,
-                'categoryname' => $persondata->categoryname,
-            );
-        }
+    //     // recentlyperson
+    //     $builder = DB::table('person as p');
+    //     $builder->where(array('p.is_del' => 0));
+    //     $builder->where('p.name', 'LIKE', "%{$req->search}%");
+    //     $builder->orderBy('p.id', 'desc');
+    //     $builder->join('category as c', 'c.id', 'p.category_id');
+    //     $builder->select('p.id', 'p.name', 'p.image', 'p.trending', 'c.name as categoryname');
+    //     $data = $builder->get();
+    //     $recentlyperson = array();
+    //     foreach ($data as $persondata) {
+    //         $imagefileName = asset('images/' . $persondata->image);
+    //         $recentlyperson[] = array(
+    //             'id' => $persondata->id,
+    //             'name' => $persondata->name,
+    //             'image' => $imagefileName,
+    //             'trending' => $persondata->trending,
+    //             'categoryname' => $persondata->categoryname,
+    //         );
+    //     }
 
-        return response()->json(['st' => 'success', 'trendingperson' => $trendingperson, 'recentlyperson' => $recentlyperson, 'PdataCount' => $PdataCount, 'lastpage' => $lastpage, 'allperson' => $allperson]);
-    }
+    //     return response()->json(['st' => 'success', 'trendingperson' => $trendingperson, 'recentlyperson' => $recentlyperson, 'PdataCount' => $PdataCount, 'lastpage' => $lastpage, 'allperson' => $allperson]);
+    // }
 
     public function CategoryByPersonData($req)
     {

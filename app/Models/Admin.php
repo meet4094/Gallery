@@ -18,6 +18,7 @@ class Admin extends Model
         return $data;
     }
 
+    // Slider Image
     public function slider_list()
     {
         $data = DB::table('slider_img')->where(array('is_del' => 0))
@@ -31,8 +32,8 @@ class Admin extends Model
                 return $images;
             })
             ->addColumn('action', function ($row) {
-                $update_btn = '<button title="' . $row->title . '" class="btn btn-link" onclick="edit_SliderImg(this)" data-val="' . $row->id . '"><i class="fas fa-edit"></i></button>';
-                $delete_btn = '<button data-toggle="modal" target="_blank"  title="' . $row->title . '" class="btn btn-link" onclick="editable_remove(this)" data-val="' . $row->id . '"><i class="fa fa-trash-alt tx-danger"></i></button>';
+                $update_btn = '<button title="' . $row->title . '" class="btn btn-link" onclick="edit_SliderImg(this)" data-table="slider_img" data-val="' . $row->id . '"><i class="fas fa-edit"></i></button>';
+                $delete_btn = '<button data-toggle="modal" target="_blank"  title="' . $row->title . '" class="btn btn-link" onclick="editable_remove(this)" data-table="slider_img" data-val="' . $row->id . '"><i class="fa fa-trash-alt tx-danger"></i></button>';
                 return $update_btn . $delete_btn;
             })
             ->rawColumns(['imageurl', 'action'])
@@ -88,34 +89,17 @@ class Admin extends Model
         }
     }
 
-    public function GetSliderData($req)
-    {
-        if (!empty($req)) {
-            $data = DB::table('slider_img')
-                ->where(array('id' => $req->sliderImgId))
-                ->select('*')
-                ->first();
-            $imagefileName = asset('images/' . $data->image);
-            $data = array(
-                'id' => $data->id,
-                'title' => $data->title,
-                'image' => $imagefileName,
-            );
-            $response = array('st' => "success", "msg" => $data);
-            return response()->json($response);
-        }
-    }
-
+    // Person Category
     public function category_list()
     {
-        $data = DB::table('Category')->where(array('is_del' => 0))
+        $data = DB::table('category')->where(array('is_del' => 0))
             ->select('*')
             ->get();
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('action', function ($row) {
-                $update_btn = '<button title="' . $row->name . '" class="btn btn-link" onclick="edit_Category(this)" data-val="' . $row->id . '"><i class="fas fa-edit"></i></button>';
-                $delete_btn = '<button data-toggle="modal" target="_blank"  title="' . $row->name . '" class="btn btn-link" onclick="editable_remove(this)" data-val="' . $row->id . '"><i class="fa fa-trash-alt tx-danger"></i></button>';
+                $update_btn = '<button title="' . $row->name . '" class="btn btn-link" onclick="edit_Category(this)" data-table="category" data-val="' . $row->id . '"><i class="fas fa-edit"></i></button>';
+                $delete_btn = '<button data-toggle="modal" target="_blank"  title="' . $row->name . '" class="btn btn-link" onclick="editable_remove(this)" data-table="category" data-val="' . $row->id . '"><i class="fa fa-trash-alt tx-danger"></i></button>';
                 return $update_btn . $delete_btn;
             })
             ->rawColumns(['imageurl', 'action'])
@@ -146,71 +130,7 @@ class Admin extends Model
         }
     }
 
-    public function GetCategoryData($req)
-    {
-        if (!empty($req)) {
-            $data = DB::table('category')
-                ->where(array('id' => $req->categoryId))
-                ->first();
-            $response = array('st' => "success", "msg" => $data);
-            return response()->json($response);
-        }
-    }
-
-    public function deleteSlider($req)
-    {
-        $sliderImgId = $req->post('sliderImgId');
-
-        $data = DB::table('slider_img')->where('id', $sliderImgId)->first();
-        $image_name = $data->image;
-        $image_path = public_path('images/' . $image_name);
-        if (file_exists($image_path)) {
-            unlink($image_path);
-        }
-        $job_data = DB::table('slider_img')->where('id', $sliderImgId)->delete();
-        if ($job_data) {
-            $response['success'] = 1;
-            $response['msg'] = 'Delete successfully';
-        } else {
-            $response['success'] = 0;
-            $response['msg'] = 'Failed to delete';
-        }
-        return $response;
-    }
-
-    public function deleteCategory($req)
-    {
-        $categoryId = $req->post('categoryId');
-        $job_data = DB::table('category')->where('id', $categoryId)->delete();
-        if ($job_data) {
-            $response['success'] = 1;
-            $response['msg'] = 'Delete successfully';
-        } else {
-            $response['success'] = 0;
-            $response['msg'] = 'Failed to delete';
-        }
-        return $response;
-    }
-
-    public function get_category($req)
-    {
-        $search = $req->searchTerm;
-        if ($search == '') {
-            $category = DB::table('category')->where(array('is_del' => 0))->select('id', 'name')->get();
-        } else {
-            $category = DB::table('category')->select('id', 'name')->where('name', 'like', '%' . $search . '%')->where('is_del', 0)->limit(10)->get();
-        }
-
-        $response = array();
-        foreach ($category as $data) {
-            $response[] = array(
-                "id" => $data->id,
-                "text" => $data->name
-            );
-        }
-        return response()->json($response);
-    }
-
+    // Person
     public function person_list($req)
     {
         $builder = DB::table('person as p');
@@ -230,8 +150,8 @@ class Admin extends Model
             })
             ->addColumn('action', function ($row) {
                 $view_btn = '<a href="/admin/person_profile_view/' . $row->id . '" title="' . $row->name . '" class="btn btn-link"><i class="fas fa-eye "></i></a>';
-                $update_btn = '<button title="' . $row->name . '" class="btn btn-link" onclick="edit_modelCategory(this)" data-val="' . $row->id . '"><i class="fas fa-edit"></i></button>';
-                $delete_btn = '<button data-toggle="modal" target="_blank"  title="' . $row->name . '" class="btn btn-link" onclick="editable_remove(this)" data-val="' . $row->id . '"><i class="fa fa-trash-alt tx-danger"></i></button>';
+                $update_btn = '<button title="' . $row->name . '" class="btn btn-link" onclick="edit_modelCategory(this)" data-table="person" data-val="' . $row->id . '"><i class="fas fa-edit"></i></button>';
+                $delete_btn = '<button data-toggle="modal" target="_blank"  title="' . $row->name . '" class="btn btn-link" onclick="editable_remove(this)" data-table="person" data-val="' . $row->id . '"><i class="fa fa-trash-alt tx-danger"></i></button>';
                 return $view_btn . $update_btn . $delete_btn;
             })
             ->rawColumns(['imageurl', 'action'])
@@ -303,55 +223,6 @@ class Admin extends Model
         }
     }
 
-    public function GetPersonData($req)
-    {
-        if (!empty($req)) {
-            $data = DB::table('person as p')
-                ->where(array('p.id' => $req->personId))
-                ->join('category as c', 'c.id', '=', 'p.category_id')
-                ->select('p.*', 'c.name as categoryname')
-                ->first();
-            $imagefileName = asset('images/' . $data->image);
-            $data = array(
-                'id' => $data->id,
-                'category_id' => $data->category_id,
-                'categoryname' => $data->categoryname,
-                'name' => $data->name,
-                'image' => $imagefileName,
-                'age' => $data->age,
-                'birthdate' => $data->birthdate,
-                'gender' => $data->gender,
-                'married_status' => $data->married_status,
-                'city' => $data->city,
-                'annual_income' => $data->annual_income,
-                'description' => $data->description,
-            );
-            $response = array('st' => "success", "msg" => $data);
-            return response()->json($response);
-        }
-    }
-
-    public function deletePerson($req)
-    {
-        $personId = $req->post('personId');
-
-        $data = DB::table('person')->where('id', $personId)->first();
-        $image_name = $data->image;
-        $image_path = public_path('images/' . $image_name);
-        if (file_exists($image_path)) {
-            unlink($image_path);
-        }
-        $job_data = DB::table('person')->where('id', $personId)->delete();
-        if ($job_data) {
-            $response['success'] = 1;
-            $response['msg'] = 'Delete successfully';
-        } else {
-            $response['success'] = 0;
-            $response['msg'] = 'Failed to delete';
-        }
-        return $response;
-    }
-
     public function person_profile_view($req)
     {
         $data = DB::table('person as p')->where(array('p.id' => $req))->join('category as c', 'c.id', '=', 'p.category_id')->select('p.*', 'c.name as categoryname')->first();
@@ -403,25 +274,7 @@ class Admin extends Model
         return $data;
     }
 
-    public function get_person($req)
-    {
-        $search = $req->searchTerm;
-        if ($search == '') {
-            $person = DB::table('person')->where(array('is_del' => 0))->select('id', 'name')->get();
-        } else {
-            $person = DB::table('person')->select('id', 'name')->where('name', 'like', '%' . $search . '%')->where('is_del', 0)->limit(10)->get();
-        }
-
-        $response = array();
-        foreach ($person as $data) {
-            $response[] = array(
-                "id" => $data->id,
-                "text" => $data->name
-            );
-        }
-        return response()->json($response);
-    }
-
+    // Person Image
     public function images_list($req)
     {
         $builder = DB::table('images as i');
@@ -449,8 +302,8 @@ class Admin extends Model
                 return $images;
             })
             ->addColumn('action', function ($row) {
-                $update_btn = '<button title="' . $row->name . '" class="btn btn-link" onclick="edit_modelCategory(this)" data-val="' . $row->id . '"><i class="fas fa-edit"></i></button>';
-                $delete_btn = '<button data-toggle="modal" target="_blank"  title="' . $row->name . '" class="btn btn-link" onclick="editable_remove(this)" data-val="' . $row->id . '"><i class="fa fa-trash-alt tx-danger"></i></button>';
+                $update_btn = '<button title="' . $row->name . '" class="btn btn-link" onclick="edit_modelCategory(this)" data-table="images" data-val="' . $row->id . '"><i class="fas fa-edit"></i></button>';
+                $delete_btn = '<button data-toggle="modal" target="_blank"  title="' . $row->name . '" class="btn btn-link" onclick="editable_remove(this)" data-table="images" data-val="' . $row->id . '"><i class="fa fa-trash-alt tx-danger"></i></button>';
                 return $update_btn . $delete_btn;
             })
             ->rawColumns(['imageurl', 'action'])
@@ -562,47 +415,85 @@ class Admin extends Model
         }
     }
 
-    public function GetImagesData($req)
+    // Any table Get Data Sem function
+    public function GetData($req)
     {
+        $table = $req->tableName;
+        $Id = $req->sliderImgId;
+
         if (!empty($req)) {
-            $data = DB::table('images as i')
-                ->where(array('i.id' => $req->imagesId))
-                ->join('person as p', 'p.id', '=', 'i.person_id')
-                ->select('i.id', 'i.person_id', 'p.name', 'i.images', 'i.video')
-                ->first();
-            if ($data->images == '') {
-                $imagefileName = '';
+            if ($table == 'slider_img') {
+                $data = DB::table($table)
+                    ->where(array('id' => $Id))
+                    ->select('*')
+                    ->first();
+                $imagefileName = asset('images/' . $data->image);
+                $data = array(
+                    'id' => $data->id,
+                    'title' => $data->title,
+                    'image' => $imagefileName,
+                );
+            } else if ($table == 'person') {
+                $data = DB::table('person as p')
+                    ->where(array('p.id' => $req->personId))
+                    ->join('category as c', 'c.id', '=', 'p.category_id')
+                    ->select('p.*', 'c.name as categoryname')
+                    ->first();
+                $imagefileName = asset('images/' . $data->image);
+                $data = array(
+                    'id' => $data->id,
+                    'category_id' => $data->category_id,
+                    'categoryname' => $data->categoryname,
+                    'name' => $data->name,
+                    'image' => $imagefileName,
+                    'age' => $data->age,
+                    'birthdate' => $data->birthdate,
+                    'gender' => $data->gender,
+                    'married_status' => $data->married_status,
+                    'city' => $data->city,
+                    'annual_income' => $data->annual_income,
+                    'description' => $data->description,
+                );
+            } else if ($table == 'images') {
+                $data = DB::table('images as i')
+                    ->where(array('i.id' => $req->imagesId))
+                    ->join('person as p', 'p.id', '=', 'i.person_id')
+                    ->select('i.id', 'i.person_id', 'p.name', 'i.images', 'i.video')
+                    ->first();
+                if ($data->images == '') {
+                    $imagefileName = '';
+                } else {
+                    $imagefileName = asset('images/' . $data->images);
+                }
+                if ($data->video == '') {
+                    $videofileName = '';
+                } else {
+                    $videofileName = asset('images/' . $data->video);
+                }
+                $data = array(
+                    'id' => $data->id,
+                    'modelID' => $data->person_id,
+                    'modelname' => $data->name,
+                    'image' => $imagefileName,
+                    'video' => $videofileName,
+                );
             } else {
-                $imagefileName = asset('images/' . $data->images);
+                $data = DB::table('category')
+                    ->where(array('id' => $req->categoryId))
+                    ->first();
             }
-            if ($data->video == '') {
-                $videofileName = '';
-            } else {
-                $videofileName = asset('images/' . $data->video);
-            }
-            $data = array(
-                'id' => $data->id,
-                'modelID' => $data->person_id,
-                'modelname' => $data->name,
-                'image' => $imagefileName,
-                'video' => $videofileName,
-            );
             $response = array('st' => "success", "msg" => $data);
             return response()->json($response);
         }
     }
 
-    public function deleteImages($req)
+    // Any table Delete Data Sem function
+    public function deleteData($req)
     {
-        $imagesId = $req->post('imagesId');
+        $table = $req->tableName;
+        $sliderImgId = $req->sliderImgId;
 
-        $data = DB::table('images')->where('id', $imagesId)->first();
-        $image_name = $data->images;
-        $image_path = public_path('images/' . $image_name);
-        if (file_exists($image_path)) {
-            unlink($image_path);
-        }
-        $job_data = DB::table('images')->where('id', $imagesId)->delete();
+        $job_data = DB::table($table)->where('id', $sliderImgId)->update(array('is_del' => '1'));
         if ($job_data) {
             $response['success'] = 1;
             $response['msg'] = 'Delete successfully';
@@ -611,5 +502,26 @@ class Admin extends Model
             $response['msg'] = 'Failed to delete';
         }
         return $response;
+    }
+
+    // Any table Drop Down Data Sem function
+    public function getdropdowndata($req)
+    {
+        $search = $req->searchTerm;
+        $tableName = $req->tableName;
+        if ($search == '') {
+            $Data = DB::table($tableName)->where(array('is_del' => 0))->select('id', 'name')->get();
+        } else {
+            $Data = DB::table($tableName)->select('id', 'name')->where('name', 'like', '%' . $search . '%')->where('is_del', 0)->limit(10)->get();
+        }
+
+        $response = array();
+        foreach ($Data as $data) {
+            $response[] = array(
+                "id" => $data->id,
+                "text" => $data->name
+            );
+        }
+        return response()->json($response);
     }
 }

@@ -66,7 +66,7 @@
                     // console.log(response.category);
                     $.each(response.category, function(prefix, val) {
                         $('#category_data').append(
-                            `<li><a class="{{ @$title == 'categories' ? 'active' : '' }}" href="{{url('CategoryByPersonData')}}/${val.id}">${val.name}</a></li>`
+                            `<li><a class="{{ @$title == 'categories' ? 'active' : '' }}" href="{{url('category')}}/${val.id}">${val.name}</a></li>`
                         )
                     })
                 } else {

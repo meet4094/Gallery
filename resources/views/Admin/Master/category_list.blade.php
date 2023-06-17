@@ -86,20 +86,10 @@
 @endsection
 @section('scripts')
 <script type="text/javascript">
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    });
-
     $('#toggler').on('click', function() {
         $('#categoryId').val('');
         document.getElementById("cform").reset();
         $('.modal-title').html('Add Category');
-    });
-
-    $(document).ready(function() {
-        load_data();
     });
 
     function load_data(filter_data = '') {
@@ -173,11 +163,13 @@
 
     function edit_Category(edit_employee) {
         var categoryId = $(edit_employee).data('val');
+        var tableName = $(edit_employee).data('table');
         $.ajax({
             type: 'POST',
-            url: "{{ url('/admin/GetCategoryData') }}",
+            url: "{{ url('/admin/GetData') }}",
             data: {
-                categoryId: categoryId
+                categoryId: categoryId,
+                tableName: tableName
             },
             success: function(response) {
                 // console.log(response);
@@ -196,45 +188,6 @@
                 alert('Error');
             }
         });
-    }
-
-    function editable_remove(data_edit) {
-        var type = 'Remove';
-        var categoryId = $(data_edit).data('val');
-        var ot_title = $(data_edit).attr('title');
-        Swal.fire({
-            title: 'Are you sure want to delete model : ' + ot_title + ' ?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it!'
-        }).then((result) => {
-            if (result.value) {
-                $.ajax({
-                    url: "{{ url('/admin/deleteCategory') }}",
-                    type: 'post',
-                    data: {
-                        categoryId: categoryId
-                    },
-                    success: function(response) {
-                        if (response.success == 1) {
-                            Swal.fire(
-                                'Deleted!',
-                                'Your data has been deleted.',
-                                'success'
-                            )
-                            $('.data-table').DataTable().ajax.reload();
-                        } else {
-                            alert("Failed");
-                        }
-                    }
-                });
-            } else {
-                swal.fire("Cancelled", "Your data is safe", "error");
-
-            }
-        })
     }
 </script>
 @endsection

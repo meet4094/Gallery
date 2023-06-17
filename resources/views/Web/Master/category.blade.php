@@ -7,7 +7,7 @@
                 <div class="breadcrumb__links">
                     <a href="/"><i class="fa fa-home"></i> Home</a>
                     <a href="{{ url('categories') }}">Categories</a>
-                    <span>{{$categoryname}}</span>
+                    <span></span>
                 </div>
             </div>
         </div>
@@ -22,7 +22,7 @@
                         <div class="row">
                             <div class="col-lg-8 col-md-8 col-sm-6">
                                 <div class="section-title">
-                                    <h4>{{$categoryname}}</h4>
+                                    <h4></h4>
                                     <input id="cid" type="text" hidden value="{{$cid}}">
                                 </div>
                             </div>
@@ -39,29 +39,6 @@
                         </div>
                     </div>
                     <div class="row" id="recent__product">
-                        @foreach($persondata as $data)
-                        <div class="col-lg-4 col-md-6 col-sm-6">
-                            <div class="product__item">
-                                <a href="{{url('person_details')}}/{{$data['id']}}">
-                                    <div class="product__item__pic set-bg" data-setbg="{{$data['image']}}">
-                                        <!-- <div class="ep">18 / 18</div> -->
-                                        <div class="comment">
-                                            <!-- <i class="fa fa-comments"></i> 11 -->
-                                        </div>
-                                        <div class="view"><i class="fa fa-eye"></i> {{$data['trending']}}</div>
-                                    </div>
-                                </a>
-                                <div class="product__item__text">
-                                    <ul>
-                                        <li>{{$data['categoryname']}}</li>
-                                    </ul>
-                                    <h5>
-                                        <a href="{{url('person_details')}}/{{$data['id']}}">{{$data['name']}}</a>
-                                    </h5>
-                                </div>
-                            </div>
-                        </div>
-                        @endforeach
                     </div>
                 </div>
                 <div class="product__pagination" id="product__pagination">
@@ -124,7 +101,7 @@
                     // console.log(response.category);
                     $.each(response.category, function(prefix, val) {
                         $('#category_data').append(
-                            `<li><a class="{{ @$title == 'categories' ? 'active' : '' }}" href="{{url('CategoryByPersonData')}}/${val.id}">${val.name}</a></li>`
+                            `<li><a class="{{ @$title == 'categories' ? 'active' : '' }}" href="{{url('category')}}/${val.id}">${val.name}</a></li>`
                         )
                     })
                 } else {
@@ -139,11 +116,44 @@
 
     //Person Data
     $(document).ready(function() {
+        var cid = $('#cid').val();
         $.ajax({
             type: 'POST',
             url: "{{ url('/getAllPersondata') }}",
+            data: {
+                cid: cid
+            },
             success: function(response) {
                 if (response.st == 'success') {
+                    $('.breadcrumb__links span').append(response.allperson[0].categoryname)
+                    $('.section-title h4').append(response.allperson[0].categoryname)
+                    $('#recent__product').html('');
+                    $.each(response.allperson, function(prefix, val) {
+                        $('#recent__product').append(
+                            `<div class="col-lg-4 col-md-6 col-sm-6">
+                            <div class="product__item">
+                            <a href="{{url('person_details')}}/${val.id}">
+                                <div class="product__item__pic set-bg" data-setbg="${val.image}" style="background-image:url('${val.image}')">
+                                    <!-- <div class="ep">18 / 18</div> -->
+                                    <div class="comment">
+                                        <!-- <i class="fa fa-comments"></i> 11 -->
+                                    </div>
+                                    <div class="view"><i class="fa fa-eye"></i> ${val.trending}</div>
+                                </div>
+                                </a>
+                                <div class="product__item__text">
+                                <ul>
+                                    <li>${val.categoryname}
+                                    </li>
+                                </ul> 
+                                    <h5>
+                                        <a href="{{url('person_details')}}/${val.id}">${val.name}</a>
+                                    </h5>
+                                </div>
+                            </div>
+                        </div>`
+                        );
+                    });
                     var pagecount = response.PdataCount;
                     for (var i = 1; i <= pagecount; i++) {
                         if (i == 1) {
@@ -187,7 +197,7 @@
                     // console.log(response);
                     if (response.st == 'success') {
                         $('#recent__product').html('');
-                        $.each(response.recentlyperson, function(prefix, val) {
+                        $.each(response.allperson, function(prefix, val) {
                             $('#recent__product').append(
                                 `<div class="col-lg-4 col-md-6 col-sm-6">
                             <div class="product__item">
@@ -239,7 +249,7 @@
                 console.log(response);
                 if (response.st == 'success') {
                     $('#recent__product').html('');
-                    $.each(response.recentlyperson, function(prefix, val) {
+                    $.each(response.allperson, function(prefix, val) {
                         $('#recent__product').append(
                             `<div class="col-lg-4 col-md-6 col-sm-6">
                             <div class="product__item">

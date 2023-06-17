@@ -39,22 +39,6 @@ class AdminController extends Controller
         }
     }
 
-    public function GetSliderData(Request $req)
-    {
-        if (!empty($req)) {
-            $data = $this->admin->GetSliderData($req);
-            return $data;
-        }
-    }
-
-    public function deleteSlider(Request $req)
-    {
-        if (!empty($req)) {
-            $msg = $this->admin->deleteSlider($req);
-            return response()->json($msg);
-        }
-    }
-
     public function category_list(Request $req)
     {
         if ($req->ajax()) {
@@ -69,30 +53,6 @@ class AdminController extends Controller
     {
         if (!empty($req)) {
             $data = $this->admin->add_edit_category($req);
-            return $data;
-        }
-    }
-
-    public function GetCategoryData(Request $req)
-    {
-        if (!empty($req)) {
-            $data = $this->admin->GetCategoryData($req);
-            return $data;
-        }
-    }
-
-    public function deleteCategory(Request $req)
-    {
-        if (!empty($req)) {
-            $msg = $this->admin->deleteCategory($req);
-            return response()->json($msg);
-        }
-    }
-
-    public function get_category(Request $req)
-    {
-        if ($req->ajax()) {
-            $data = $this->admin->get_category($req);
             return $data;
         }
     }
@@ -115,22 +75,6 @@ class AdminController extends Controller
         }
     }
 
-    public function GetPersonData(Request $req)
-    {
-        if (!empty($req)) {
-            $data = $this->admin->GetPersonData($req);
-            return $data;
-        }
-    }
-
-    public function deletePerson(Request $req)
-    {
-        if (!empty($req)) {
-            $msg = $this->admin->deletePerson($req);
-            return response()->json($msg);
-        }
-    }
-
     public function person_profile_view($req)
     {
         if (!empty($req)) {
@@ -138,14 +82,6 @@ class AdminController extends Controller
             $data['data'] = $iData;
             $data['title'] = 'person_list';
             return view('Admin.Master.person_profile_view', $data);
-        }
-    }
-
-    public function get_person(Request $req)
-    {
-        if ($req->ajax()) {
-            $data = $this->admin->get_person($req);
-            return $data;
         }
     }
 
@@ -167,19 +103,27 @@ class AdminController extends Controller
         }
     }
 
-    public function GetImagesData(Request $req)
+    public function deleteData(Request $req)
     {
         if (!empty($req)) {
-            $data = $this->admin->GetImagesData($req);
+            $msg = $this->admin->deleteData($req);
+            return response()->json($msg);
+        }
+    }
+
+    public function GetData(Request $req)
+    {
+        if (!empty($req)) {
+            $data = $this->admin->GetData($req);
             return $data;
         }
     }
 
-    public function deleteImages(Request $req)
+    public function getdropdowndata(Request $req)
     {
-        if (!empty($req)) {
-            $msg = $this->admin->deleteImages($req);
-            return response()->json($msg);
+        if ($req->ajax()) {
+            $data = $this->admin->getdropdowndata($req);
+            return $data;
         }
     }
 }

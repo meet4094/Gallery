@@ -22,25 +22,25 @@ use function PHPUnit\Framework\callback;
 Route::controller(WebController::class)->group(function () {
     Route::get('/', 'home')->name('home');
     Route::get('/categories', 'categories')->name('categories');
+    Route::get('/category/{id}', 'category');
+    Route::get('/contacts', 'contacts')->name('contacts');
+    Route::get('/login', 'login')->name('login');
+
     Route::post('/getCategorydata', 'getCategorydata');
     Route::post('/getSliderdata', 'getSliderdata');
     Route::post('/getAllPersondata', 'getAllPersondata');
-    Route::post('/getRecentlyAddPersondata', 'getRecentlyAddPersondata');
-    Route::post('/getTrendingPersondata', 'getTrendingPersondata');
     Route::post('/getTopViewPersondata', 'getTopViewPersondata');
+    Route::post('/getCategoryByPersonData', 'getCategoryByPersonData');
     Route::post('/getCategoryByAnyPersondata', 'getCategoryByAnyPersondata');
-    Route::get('/CategoryByPersonData/{id}', 'CategoryByPersonData');
-    Route::get('/person_details/{id}', 'person_details');
-    Route::get('/contacts', 'contacts')->name('contacts');
-    Route::get('/login', 'login')->name('login');
-    Route::post('/sendcomment', 'sendcomment');
-    Route::post('/getComment', 'getComment');
+    // Route::get('/person_details/{id}', 'person_details');
+    // Route::post('/sendcomment', 'sendcomment');
+    // Route::post('/getComment', 'getComment');
     // Route::post('/sendMessage', 'sendMessage');
     // Route::get('/blog', 'blog')->name('blog');
-    Route::post('/searchPerson', 'searchPerson');
+    // Route::post('/searchPerson', 'searchPerson');
 
-    Route::get('/login/google', 'loginGoogle');
-    Route::get('/login/google/callback', 'callback');
+    // Route::get('/login/google', 'loginGoogle');
+    // Route::get('/login/google/callback', 'callback');
 });
 
 // ADMIN ROUTE
@@ -62,28 +62,27 @@ Route::middleware([Authenticate::class])->group(function () {
         // Slider
         Route::get('/admin/slider_list', 'slider_list')->name('slider_list');
         Route::post('/admin/add_edit_slider', 'add_edit_slider');
-        Route::post('/admin/GetSliderData', 'GetSliderData');
-        Route::post('/admin/deleteSlider', 'deleteSlider');
 
         // Category
         Route::get('/admin/category_list', 'category_list')->name('category_list');
         Route::post('/admin/add_edit_category', 'add_edit_category');
-        Route::post('/admin/GetCategoryData', 'GetCategoryData');
-        Route::post('/admin/deleteCategory', 'deleteCategory');
-        Route::post('/admin/get_category', 'get_category');
 
         // Person
         Route::get('/admin/person_list', 'person_list')->name('person_list');
         Route::post('/admin/add_edit_person', 'add_edit_person');
-        Route::post('/admin/GetPersonData', 'GetPersonData');
-        Route::post('/admin/deletePerson', 'deletePerson');
         Route::get('/admin/person_profile_view/{id}', 'person_profile_view')->name('person_profile_view');
-        Route::post('/admin/get_person', 'get_person');
 
         // Person Images
         Route::get('/admin/images_list', 'images_list')->name('images_list');
         Route::post('/admin/add_edit_images', 'add_edit_images');
-        Route::post('/admin/GetImagesData', 'GetImagesData');
-        Route::post('/admin/deleteImages', 'deleteImages');
+
+        //  All Over Delete Function
+        Route::post('/admin/deleteData', 'deleteData');
+
+        //  All Over Data Get Function
+        Route::post('/admin/GetData', 'GetData');
+
+        //  All Drow down Data Get Function
+        Route::post('/admin/getdropdowndata', 'getdropdowndata');
     });
 });

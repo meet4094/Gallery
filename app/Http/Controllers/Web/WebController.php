@@ -50,22 +50,6 @@ class WebController extends Controller
         }
     }
 
-    public function getRecentlyAddPersondata(Request $req)
-    {
-        if ($req->ajax()) {
-            $data = $this->web->getRecentlyAddPersondata($req);
-            return $data;
-        }
-    }
-
-    public function getTrendingPersondata(Request $req)
-    {
-        if ($req->ajax()) {
-            $data = $this->web->getTrendingPersondata($req);
-            return $data;
-        }
-    }
-
     public function getTopViewPersondata(Request $req)
     {
         if ($req->ajax()) {
@@ -74,10 +58,10 @@ class WebController extends Controller
         }
     }
 
-    public function CategoryByPersonData($req)
+    public function category($req)
     {
-        $data = $this->web->CategoryByPersonData($req);
         $data['title'] = 'categories';
+        $data['cid'] = $req;
         return view('Web.Master.category', $data);
     }
 

@@ -104,7 +104,7 @@
     <a href="#top" id="back-to-top"><i class="fe fe-arrow-up"></i></a>
     <!-- Jquery js-->
     @include('Admin.blocks.scripts')
+    @include('Admin.blocks.script-js')
     @yield('scripts')
 </body>
-
 </html>

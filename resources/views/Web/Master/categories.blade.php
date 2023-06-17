@@ -100,7 +100,7 @@
                     // console.log(response.category);
                     $.each(response.category, function(prefix, val) {
                         $('#category_data').append(
-                            `<li><a class="{{ @$title == 'categories' ? 'active' : '' }}" href="{{url('CategoryByPersonData')}}/${val.id}">${val.name}</a></li>`
+                            `<li><a class="{{ @$title == 'categories' ? 'active' : '' }}" href="{{url('category')}}/${val.id}">${val.name}</a></li>`
                         )
                     })
                 } else {
@@ -120,8 +120,7 @@
             url: "{{ url('/getAllPersondata') }}",
             success: function(response) {
                 if (response.st == 'success') {
-                    // console.log(response);
-                    $.each(response.recentlyperson, function(prefix, val) {
+                    $.each(response.allperson, function(prefix, val) {
                         $('#recent__product').append(
                             `<div class="col-lg-4 col-md-6 col-sm-6">
                             <div class="product__item">
@@ -148,18 +147,19 @@
                         );
                     });
                     var pagecount = response.PdataCount;
+                    var pageDisCount = 5;
                     for (var i = 1; i <= pagecount; i++) {
                         if (i == 1) {
                             $('.product__pagination').append(
                                 `<a onClick="pagination(${i})" id="${i}" style="cursor: pointer;" class="current-page">${i}</a>`
                             )
-                        } else if (i <= 5) {
+                        } else if (i <= pageDisCount) {
                             $('.product__pagination').append(
                                 `<a onClick="pagination(${i})" id="${i}" style="cursor: pointer;">${i}</a>`
                             )
                         }
                     }
-                    if (i > 2) {
+                    if (i > pageDisCount) {
                         $('.product__pagination').append(
                             `<a onClick="pagination(${i})" id="${i}" style="cursor: pointer;"><i class="fa fa-angle-double-right"></i></a>`
                         )
@@ -188,7 +188,7 @@
                     // console.log(response);
                     if (response.st == 'success') {
                         $('#recent__product').html('');
-                        $.each(response.recentlyperson, function(prefix, val) {
+                        $.each(response.allperson, function(prefix, val) {
                             $('#recent__product').append(
                                 `<div class="col-lg-4 col-md-6 col-sm-6">
                             <div class="product__item">
@@ -228,18 +228,19 @@
     //Pagination Filter Person Data
     function pagination(e) {
         var pageId = e;
-        // alert(pageId);
+        var filterId = $('.filtterData').find(":selected").val();
+        dispatchEvent;
         $.ajax({
             type: 'POST',
             url: "{{ url('/getAllPersondata') }}",
             data: {
-                pageId: pageId
+                pageId: pageId,
+                filterId: filterId
             },
             success: function(response) {
-                // console.log(response);
                 if (response.st == 'success') {
                     $('#recent__product').html('');
-                    $.each(response.recentlyperson, function(prefix, val) {
+                    $.each(response.allperson, function(prefix, val) {
                         $('#recent__product').append(
                             `<div class="col-lg-4 col-md-6 col-sm-6">
                             <div class="product__item">
@@ -267,25 +268,26 @@
                     });
                     $('#product__pagination').html('');
                     var pagecount = response.PdataCount;
+                    var pageDisCount = 5;
                     for (var i = 1; i <= pagecount; i++) {
                         if (i == 1) {
                             $('.product__pagination').append(
                                 `<a onClick="pagination(${i})" id="${i}" style="cursor: pointer;" class="current-page">${i}</a>`
                             )
-                        } else if (i <= 5) {
+                        } else if (i <= pageDisCount) {
                             $('.product__pagination').append(
                                 `<a onClick="pagination(${i})" id="${i}" style="cursor: pointer;">${i}</a>`
                             )
                         }
                     }
+                    if (i > pageDisCount) {
+                        $('.product__pagination').append(
+                            `<a onClick="pagination(${i})" id="${i}" ><i class="fa fa-angle-double-right"></i></a>`
+                        )
+                    }
                     if (response.lastpage != "") {
                         $('.product__pagination').append(
                             `<a onClick="pagination(${response.lastpage})" id="${response.lastpage}">${response.lastpage}</a>`
-                        )
-                    }
-                    if (i > 2) {
-                        $('.product__pagination').append(
-                            `<a onClick="pagination(${i})" id="${i}" ><i class="fa fa-angle-double-right"></i></a>`
                         )
                     }
                     if (response.lastpage != "") {
@@ -293,7 +295,6 @@
                     } else {
                         var newpageId = pageId;
                     }
-                    // console.log(newpageId);
                     var pagecount = response.PdataCount;
                     for (let index = 1; index <= pagecount; index++) {
                         var RemoveClass = document.getElementById(index);
@@ -369,86 +370,86 @@
         });
     });
 
-    // Search person 
-    $('.search-model-form').on('submit', function(e) {
-        e.preventDefault();
-        var aurl = $(this).attr('action');
-        var form = $(this);
-        var formdata = false;
-        if (window.FormData) {
-            formdata = new FormData(form[0]);
-        }
-        $.ajax({
-            type: "POST",
-            url: aurl,
-            cache: false,
-            contentType: false,
-            processData: false,
-            data: formdata ? formdata : form.serialize(),
-            success: function(response) {
-                if (response.st == 'success') {
-                    console.log(response.allperson);
-                    $('#recent__product').html('');
-                    $('#product__pagination').html('');
-                    if (response.allperson == '') {
-                        $('#recent__product').append(
-                            `<div style="color:white">Data not found</div>`
-                        )
-                    }
-                    $.each(response.allperson, function(prefix, val) {
-                        $('#recent__product').append(
-                            `<div class="col-lg-4 col-md-6 col-sm-6">
-                            <div class="product__item">
-                            <a href="{{url('person_details')}}/${val.id}">
-                                <div class="product__item__pic set-bg" data-setbg="${val.image}" style="background-image:url('${val.image}')">
-                                    <!-- <div class="ep">18 / 18</div> -->
-                                    <div class="comment">
-                                        <!-- <i class="fa fa-comments"></i> 11 -->
-                                    </div>
-                                    <div class="view"><i class="fa fa-eye"></i> ${val.trending}</div>
-                                </div>
-                                </a>
-                                <div class="product__item__text">
-                                <ul>
-                                    <li>${val.categoryname}
-                                    </li>
-                                </ul> 
-                                    <h5>
-                                        <a href="{{url('person_details')}}/${val.id}">${val.name}</a>
-                                    </h5>
-                                </div>
-                            </div>
-                        </div>`
-                        );
-                    });
-                    if (response.allperson != '') {
-                        var pagecount = response.PdataCount;
-                        for (var i = 1; i <= pagecount; i++) {
-                            if (i == 1) {
-                                $('.product__pagination').append(
-                                    `<a onClick="pagination(${i})" id="${i}" style="cursor: pointer;" class="current-page">${i}</a>`
-                                )
-                            } else if (i <= 5) {
-                                $('.product__pagination').append(
-                                    `<a onClick="pagination(${i})" id="${i}" style="cursor: pointer;">${i}</a>`
-                                )
-                            }
-                        }
-                        if (i > 2) {
-                            $('.product__pagination').append(
-                                `<a onClick="pagination(${i})" id="${i}" style="cursor: pointer;"><i class="fa fa-angle-double-right"></i></a>`
-                            )
-                        }
-                    }
-                } else {
-                    alert('failed');
-                }
-            },
-            error: function() {
-                alert('Error');
-            }
-        });
-        return false;
-    });
+    // // Search person 
+    // $('.search-model-form').on('submit', function(e) {
+    //     e.preventDefault();
+    //     var aurl = $(this).attr('action');
+    //     var form = $(this);
+    //     var formdata = false;
+    //     if (window.FormData) {
+    //         formdata = new FormData(form[0]);
+    //     }
+    //     $.ajax({
+    //         type: "POST",
+    //         url: aurl,
+    //         cache: false,
+    //         contentType: false,
+    //         processData: false,
+    //         data: formdata ? formdata : form.serialize(),
+    //         success: function(response) {
+    //             if (response.st == 'success') {
+    //                 console.log(response.allperson);
+    //                 $('#recent__product').html('');
+    //                 $('#product__pagination').html('');
+    //                 if (response.allperson == '') {
+    //                     $('#recent__product').append(
+    //                         `<div style="color:white">Data not found</div>`
+    //                     )
+    //                 }
+    //                 $.each(response.allperson, function(prefix, val) {
+    //                     $('#recent__product').append(
+    //                         `<div class="col-lg-4 col-md-6 col-sm-6">
+    //                         <div class="product__item">
+    //                         <a href="{{url('person_details')}}/${val.id}">
+    //                             <div class="product__item__pic set-bg" data-setbg="${val.image}" style="background-image:url('${val.image}')">
+    //                                 <!-- <div class="ep">18 / 18</div> -->
+    //                                 <div class="comment">
+    //                                     <!-- <i class="fa fa-comments"></i> 11 -->
+    //                                 </div>
+    //                                 <div class="view"><i class="fa fa-eye"></i> ${val.trending}</div>
+    //                             </div>
+    //                             </a>
+    //                             <div class="product__item__text">
+    //                             <ul>
+    //                                 <li>${val.categoryname}
+    //                                 </li>
+    //                             </ul> 
+    //                                 <h5>
+    //                                     <a href="{{url('person_details')}}/${val.id}">${val.name}</a>
+    //                                 </h5>
+    //                             </div>
+    //                         </div>
+    //                     </div>`
+    //                     );
+    //                 });
+    //                 if (response.allperson != '') {
+    //                     var pagecount = response.PdataCount;
+    //                     for (var i = 1; i <= pagecount; i++) {
+    //                         if (i == 1) {
+    //                             $('.product__pagination').append(
+    //                                 `<a onClick="pagination(${i})" id="${i}" style="cursor: pointer;" class="current-page">${i}</a>`
+    //                             )
+    //                         } else if (i <= 5) {
+    //                             $('.product__pagination').append(
+    //                                 `<a onClick="pagination(${i})" id="${i}" style="cursor: pointer;">${i}</a>`
+    //                             )
+    //                         }
+    //                     }
+    //                     if (i > 2) {
+    //                         $('.product__pagination').append(
+    //                             `<a onClick="pagination(${i})" id="${i}" style="cursor: pointer;"><i class="fa fa-angle-double-right"></i></a>`
+    //                         )
+    //                     }
+    //                 }
+    //             } else {
+    //                 alert('failed');
+    //             }
+    //         },
+    //         error: function() {
+    //             alert('Error');
+    //         }
+    //     });
+    //     return false;
+    // });
 </script>
 @endsection

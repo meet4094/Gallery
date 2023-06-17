@@ -147,7 +147,7 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label for="">Category</span></label>
-                        <select class="form-control select2-flag-search select2" id="category_id">
+                        <select class="form-control category1-flag-search category1" id="category_id">
                             <option value=""></option>
                         </select>
                     </div>
@@ -187,12 +187,6 @@
 @endsection
 @section('scripts')
 <script type="text/javascript">
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    });
-
     $('#toggler').on('click', function() {
         $('#personId').val('');
         $('#images').html('');
@@ -201,75 +195,7 @@
         $('.modal-title').html('Add Person');
     });
 
-    $('.select2').on('change', function() {
-        var data = $(".select2 option:selected").text();
-        console.log(data);
-        $("#categoryid").val(data);
-    })
-
-    $(".select2").select2({
-        placeholder: "Select a Category",
-        // allowClear: true,
-        width: "100%",
-        ajax: {
-            url: "{{ url('admin/get_category') }}",
-            type: "post",
-            allowClear: true,
-            dataType: 'json',
-            delay: 250,
-            data: function(params) {
-                return {
-                    searchTerm: params.term, // search term
-                    category: $('select[name="categoryid"]').val(),
-                };
-            },
-            processResults: function(response) {
-                console.log(response);
-                return {
-                    results: response
-                };
-            },
-            cache: true
-        }
-    });
-
-    $('.category2').on('change', function() {
-        var data = $(".category2 option:selected").text();
-        console.log(data);
-        $("#category").val(data);
-    })
-
-    $(".category2").select2({
-        placeholder: "Select a Category",
-        // allowClear: true,
-        width: "100%",
-        ajax: {
-            url: "{{ url('admin/get_category') }}",
-            type: "post",
-            allowClear: true,
-            dataType: 'json',
-            delay: 250,
-            data: function(params) {
-                return {
-                    searchTerm: params.term, // search term
-                    category: $('select[name="categoryid"]').val(),
-                };
-            },
-            processResults: function(response) {
-                console.log(response);
-                return {
-                    results: response
-                };
-            },
-            cache: true
-        }
-    });
-
-    $(document).ready(function() {
-        load_datatable();
-    });
-
-    function load_datatable(category_id = '') {
+    function load_data(category_id = '') {
         $('.data-table').DataTable({
             processing: true,
             serverSide: true,
@@ -353,11 +279,13 @@
 
     function edit_modelCategory(edit_employee) {
         var personId = $(edit_employee).data('val');
+        var tableName = $(edit_employee).data('table');
         $.ajax({
             type: 'POST',
-            url: "{{ url('/admin/GetPersonData') }}",
+            url: "{{ url('/admin/GetData') }}",
             data: {
-                personId: personId
+                personId: personId,
+                tableName: tableName
             },
             success: function(response) {
                 // console.log(response);
@@ -401,52 +329,5 @@
             }
         });
     }
-
-    function editable_remove(data_edit) {
-        var type = 'Remove';
-        var personId = $(data_edit).data('val');
-        var ot_title = $(data_edit).attr('title');
-        Swal.fire({
-            title: 'Are you sure want to delete model : ' + ot_title + ' ?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it!'
-        }).then((result) => {
-            if (result.value) {
-                $.ajax({
-                    url: "{{ url('/admin/deletePerson') }}",
-                    type: 'post',
-                    data: {
-                        personId: personId
-                    },
-                    success: function(response) {
-                        if (response.success == 1) {
-                            Swal.fire(
-                                'Deleted!',
-                                'Your data has been deleted.',
-                                'success'
-                            )
-                            $('.data-table').DataTable().ajax.reload();
-                        } else {
-                            alert("Failed");
-                        }
-                    }
-                });
-            } else {
-                swal.fire("Cancelled", "Your data is safe", "error");
-
-            }
-        })
-    }
-
-    $('#statusApply').click(function() {
-        var category_id = $('#category_id').val();
-        if (category_id != '') {
-            $('#table_list_data').DataTable().destroy();
-            load_datatable(category_id);
-        }
-    });
 </script>
 @endsection

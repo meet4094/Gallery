@@ -24,6 +24,7 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-8">
+                <!-- trending persons -->
                 <div class="trending__product">
                     <div class="row">
                         <div class="col-lg-8 col-md-8 col-sm-8">
@@ -40,6 +41,7 @@
                     <div class="row" id="trending__product">
                     </div>
                 </div>
+                <!-- recent persons -->
                 <div class="recent__product">
                     <div class="row">
                         <div class="col-lg-8 col-md-8 col-sm-8">
@@ -115,7 +117,7 @@
                     // console.log(response.category);
                     $.each(response.category, function(prefix, val) {
                         $('#category_data').append(
-                            `<li><a class="{{ @$title == 'categories' ? 'active' : '' }}" href="{{url('CategoryByPersonData')}}/${val.id}">${val.name}</a></li>`
+                            `<li><a class="{{ @$title == 'categories' ? 'active' : '' }}" href="{{url('category')}}/${val.id}">${val.name}</a></li>`
                         )
                     })
                 } else {
@@ -128,60 +130,43 @@
         });
     });
 
-    // Trending Person
+    // Person Data
     $(document).ready(function() {
         $.ajax({
             type: 'POST',
-            url: "{{ url('/getTrendingPersondata') }}",
+            url: "{{ url('/getAllPersondata') }}",
             success: function(response) {
                 if (response.st == 'success') {
-                    // console.log(response.trendingperson);
+                    console.log(response);
                     $.each(response.trendingperson, function(prefix, val) {
                         $('#trending__product').append(
                             `<div class="col-lg-4 col-md-6 col-sm-6">
-                            <div class="product__item">
-                            <a onclick="open(this);" href="{{url('person_details')}}/${val.id}">
-                                <div class="product__item__pic set-bg" data-setbg="${val.image}" style="background-image:url('${val.image}')">
-                                    <!-- <div class="ep">18 / 18</div> -->
-                                    <div class="comment">
-                                        <!-- <i class="fa fa-comments"></i> 11 -->
-                                    </div>
-                                    <div class="view"><i class="fa fa-eye"></i> ${val.trending}</div>
-                                </div>
-                                </a>
-                                <div class="product__item__text">
-                                    <ul>
-                                        <li>${val.categoryname}</li>
-                                    </ul>
-                                    <h5>
-                                        <a href="{{url('person_details')}}/${val.id}">${val.name}</a>
-                                    </h5>
-                                </div>
-                            </div>
-                        </div>`
+                               <div class="product__item">
+                               <a onclick="open(this);" href="{{url('person_details')}}/${val.id}">
+                                   <div class="product__item__pic set-bg" data-setbg="${val.image}" style="background-image:url('${val.image}')">
+                                       <!-- <div class="ep">18 / 18</div> -->
+                                       <div class="comment">
+                                           <!-- <i class="fa fa-comments"></i> 11 -->
+                                       </div>
+                                       <div class="view"><i class="fa fa-eye"></i> ${val.trending}</div>
+                                   </div>
+                                   </a>
+                                   <div class="product__item__text">
+                                       <ul>
+                                           <li>${val.categoryname}</li>
+                                       </ul>
+                                       <h5>
+                                           <a href="{{url('person_details')}}/${val.id}">${val.name}</a>
+                                       </h5>
+                                   </div>
+                               </div>
+                            </div>`
                         );
                     });
-                } else {
-                    alert('failed');
-                }
-            },
-            error: function(error) {
-                alert('Error');
-            }
-        });
-    });
-
-    //Recently Add Person
-    $(document).ready(function() {
-        $.ajax({
-            type: 'POST',
-            url: "{{ url('/getRecentlyAddPersondata') }}",
-            success: function(response) {
-                if (response.st == 'success') {
-                    // console.log(response.category);
                     $.each(response.recentlyperson, function(prefix, val) {
-                        $('#recent__product').append(
-                            `<div class="col-lg-4 col-md-6 col-sm-6">
+                        if (prefix < 10) {
+                            $('#recent__product').append(
+                                `<div class="col-lg-4 col-md-6 col-sm-6">
                             <div class="product__item">
                             <a href="{{url('person_details')}}/${val.id}">
                                 <div class="product__item__pic set-bg" data-setbg="${val.image}" style="background-image:url('${val.image}')">
@@ -203,7 +188,8 @@
                                 </div>
                             </div>
                         </div>`
-                        );
+                            );
+                        }
                     });
                 } else {
                     alert('failed');
@@ -275,97 +261,97 @@
         });
     });
 
-    // Search person 
-    $('.search-model-form').on('submit', function(e) {
-        e.preventDefault();
-        var aurl = $(this).attr('action');
-        var form = $(this);
-        var formdata = false;
-        if (window.FormData) {
-            formdata = new FormData(form[0]);
-        }
-        $.ajax({
-            type: "POST",
-            url: aurl,
-            cache: false,
-            contentType: false,
-            processData: false,
-            data: formdata ? formdata : form.serialize(),
-            success: function(response) {
-                if (response.st == 'success') {
-                    console.log(response);
-                    $('#trending__product').html('');
-                    $('#recent__product').html('');
-                    if (response.trendingperson == '') {
-                        $('#trending__product').append(
-                            `<div style="color:white">Data not found</div>`
-                        )
-                    }
-                    $.each(response.trendingperson, function(prefix, val) {
-                        $('#trending__product').append(
-                            `<div class="col-lg-4 col-md-6 col-sm-6">
-                            <div class="product__item">
-                            <a href="{{url('person_details')}}/${val.id}">
-                                <div class="product__item__pic set-bg" data-setbg="${val.image}" style="background-image:url('${val.image}')">
-                                    <!-- <div class="ep">18 / 18</div> -->
-                                    <div class="comment">
-                                        <!-- <i class="fa fa-comments"></i> 11 -->
-                                    </div>
-                                    <div class="view"><i class="fa fa-eye"></i> ${val.trending}</div>
-                                </div>
-                                </a>
-                                <div class="product__item__text">
-                                    <ul>
-                                        <li>${val.categoryname}</li>
-                                    </ul>
-                                    <h5>
-                                        <a href="{{url('person_details')}}/${val.id}">${val.name}</a>
-                                    </h5>
-                                </div>
-                            </div>
-                        </div>`
-                        );
-                    });
-                    if (response.recentlyperson == '') {
-                        $('#recent__product').append(
-                            `<div style="color:white">Data not found</div>`
-                        )
-                    }
-                    $.each(response.recentlyperson, function(prefix, val) {
-                        $('#recent__product').append(
-                            `<div class="col-lg-4 col-md-6 col-sm-6">
-                            <div class="product__item">
-                            <a href="{{url('person_details')}}/${val.id}">
-                                <div class="product__item__pic set-bg" data-setbg="${val.image}" style="background-image:url('${val.image}')">
-                                    <!-- <div class="ep">18 / 18</div> -->
-                                    <div class="comment">
-                                        <!-- <i class="fa fa-comments"></i> 11 -->
-                                    </div>
-                                    <div class="view"><i class="fa fa-eye"></i> ${val.trending}</div>
-                                </div>
-                                </a>
-                                <div class="product__item__text">
-                                <ul>
-                                    <li>${val.categoryname}
-                                    </li>
-                                </ul> 
-                                    <h5>
-                                        <a href="{{url('person_details')}}/${val.id}">${val.name}</a>
-                                    </h5>
-                                </div>
-                            </div>
-                        </div>`
-                        );
-                    });
-                } else {
-                    alert('failed');
-                }
-            },
-            error: function() {
-                alert('Error');
-            }
-        });
-        return false;
-    });
+    // // Search person 
+    // $('.search-model-form').on('submit', function(e) {
+    //     e.preventDefault();
+    //     var aurl = $(this).attr('action');
+    //     var form = $(this);
+    //     var formdata = false;
+    //     if (window.FormData) {
+    //         formdata = new FormData(form[0]);
+    //     }
+    //     $.ajax({
+    //         type: "POST",
+    //         url: aurl,
+    //         cache: false,
+    //         contentType: false,
+    //         processData: false,
+    //         data: formdata ? formdata : form.serialize(),
+    //         success: function(response) {
+    //             if (response.st == 'success') {
+    //                 console.log(response);
+    //                 $('#trending__product').html('');
+    //                 $('#recent__product').html('');
+    //                 if (response.trendingperson == '') {
+    //                     $('#trending__product').append(
+    //                         `<div style="color:white">Data not found</div>`
+    //                     )
+    //                 }
+    //                 $.each(response.trendingperson, function(prefix, val) {
+    //                     $('#trending__product').append(
+    //                         `<div class="col-lg-4 col-md-6 col-sm-6">
+    //                         <div class="product__item">
+    //                         <a href="{{url('person_details')}}/${val.id}">
+    //                             <div class="product__item__pic set-bg" data-setbg="${val.image}" style="background-image:url('${val.image}')">
+    //                                 <!-- <div class="ep">18 / 18</div> -->
+    //                                 <div class="comment">
+    //                                     <!-- <i class="fa fa-comments"></i> 11 -->
+    //                                 </div>
+    //                                 <div class="view"><i class="fa fa-eye"></i> ${val.trending}</div>
+    //                             </div>
+    //                             </a>
+    //                             <div class="product__item__text">
+    //                                 <ul>
+    //                                     <li>${val.categoryname}</li>
+    //                                 </ul>
+    //                                 <h5>
+    //                                     <a href="{{url('person_details')}}/${val.id}">${val.name}</a>
+    //                                 </h5>
+    //                             </div>
+    //                         </div>
+    //                     </div>`
+    //                     );
+    //                 });
+    //                 if (response.recentlyperson == '') {
+    //                     $('#recent__product').append(
+    //                         `<div style="color:white">Data not found</div>`
+    //                     )
+    //                 }
+    //                 $.each(response.recentlyperson, function(prefix, val) {
+    //                     $('#recent__product').append(
+    //                         `<div class="col-lg-4 col-md-6 col-sm-6">
+    //                         <div class="product__item">
+    //                         <a href="{{url('person_details')}}/${val.id}">
+    //                             <div class="product__item__pic set-bg" data-setbg="${val.image}" style="background-image:url('${val.image}')">
+    //                                 <!-- <div class="ep">18 / 18</div> -->
+    //                                 <div class="comment">
+    //                                     <!-- <i class="fa fa-comments"></i> 11 -->
+    //                                 </div>
+    //                                 <div class="view"><i class="fa fa-eye"></i> ${val.trending}</div>
+    //                             </div>
+    //                             </a>
+    //                             <div class="product__item__text">
+    //                             <ul>
+    //                                 <li>${val.categoryname}
+    //                                 </li>
+    //                             </ul> 
+    //                                 <h5>
+    //                                     <a href="{{url('person_details')}}/${val.id}">${val.name}</a>
+    //                                 </h5>
+    //                             </div>
+    //                         </div>
+    //                     </div>`
+    //                     );
+    //                 });
+    //             } else {
+    //                 alert('failed');
+    //             }
+    //         },
+    //         error: function() {
+    //             alert('Error');
+    //         }
+    //     });
+    //     return false;
+    // });
 </script>
 @endsection
