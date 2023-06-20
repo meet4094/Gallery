@@ -15,6 +15,7 @@ class WebController extends Controller
         $this->web = new Web();
     }
 
+    // View Page
     public function home(Request $req)
     {
         $data['slider'] = $this->web->getSliderdata();
@@ -28,12 +29,32 @@ class WebController extends Controller
         return view('Web.Master.categories', $data);
     }
 
+    public function category($req)
+    {
+        $data['title'] = 'categories';
+        $data['cid'] = $req;
+        return view('Web.Master.category', $data);
+    }
+
+    public function person_details($req)
+    {
+        $data['persondetails'] = $this->web->person_details($req);
+        $data['title'] = 'categories';
+        return view('Web.Master.person_details', $data);
+    }
+
     public function contacts()
     {
         $data['title'] = 'contacts';
         return view('Web.Master.contacts', $data);
     }
 
+    public function login()
+    {
+        return view('Web.Master.login');
+    }
+
+    // Get Data Function
     public function getCategorydata(Request $req)
     {
         if ($req->ajax()) {
@@ -58,46 +79,23 @@ class WebController extends Controller
         }
     }
 
-    public function category($req)
+    // Login Function
+    public function loginGoogle()
     {
-        $data['title'] = 'categories';
-        $data['cid'] = $req;
-        return view('Web.Master.category', $data);
+        return Socialite::driver('google')->redirect();
     }
 
-    public function person_details($req)
+    public function callback()
     {
-        $data['persondetails'] = $this->web->person_details($req);
-        $data['title'] = 'categories';
-        return view('Web.Master.person_details', $data);
+        $data = $this->web->callback();
+        return $data;
     }
 
-    public function getCategoryByAnyPersondata(Request $req)
-    {
-        if ($req->ajax()) {
-            $data = $this->web->getCategoryByAnyPersondata($req);
-            return $data;
-        }
-    }
-
-    public function blog()
-    {
-        $data['title'] = 'blog';
-        return view('Web.Master.blog', $data);
-    }
-
+    // Comment Function
     public function sendcomment(Request $req)
     {
         if ($req->ajax()) {
             $data = $this->web->sendcomment($req);
-            return $data;
-        }
-    }
-
-    public function sendMessage(Request $req)
-    {
-        if ($req->ajax()) {
-            $data = $this->web->sendMessage($req);
             return $data;
         }
     }
@@ -110,27 +108,21 @@ class WebController extends Controller
         }
     }
 
+    // Contact Page Form Message Function
+    public function sendMessage(Request $req)
+    {
+        if ($req->ajax()) {
+            $data = $this->web->sendMessage($req);
+            return $data;
+        }
+    }
+
+    // Header Search Data
     public function searchPerson(Request $req)
     {
         if ($req->ajax()) {
             $data = $this->web->searchPerson($req);
             return $data;
         }
-    }
-
-    public function login()
-    {
-        return view('Web.Master.login');
-    }
-
-    public function loginGoogle()
-    {
-        return Socialite::driver('google')->redirect();
-    }
-
-    public function callback()
-    {
-        $data = $this->web->callback();
-        return $data;
     }
 }

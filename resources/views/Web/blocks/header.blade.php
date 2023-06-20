@@ -18,7 +18,6 @@
                                 <ul class="dropdown" id="category_data">
                                 </ul>
                             </li>
-                            <!-- <li class="{{ @$title == 'blog' ? 'active' : '' }}"><a href="{{ url('/blog') }}">Our Blog</a></li> -->
                             <li class="{{ @$title == 'contacts' ? 'active' : '' }}"><a href="{{ url('/contacts') }}">Contacts</a></li>
                         </ul>
                     </nav>

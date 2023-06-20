@@ -12,9 +12,11 @@ class Admin extends Model
 {
     public function dashboard()
     {
+        $data['slider'] = DB::table('slider_img')->where(array('is_del' => 0))->count('id');
         $data['category'] = DB::table('category')->where(array('is_del' => 0))->count('id');
         $data['person'] = DB::table('person')->where(array('is_del' => 0))->count('id');
-        // $data['images'] = DB::table('images')->where(array('is_del' => 0))->count('id');
+        $data['personimage'] = DB::table('images')->where(array('is_del' => 0))->where(array('video' => ''))->count('id');
+        $data['personvideo'] = DB::table('images')->where(array('is_del' => 0))->where(array('images' => ''))->count('id');
         return $data;
     }
 

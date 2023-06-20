@@ -43,6 +43,7 @@
     <!--End Footer-->
 
     @include('Web.blocks.scripts')
+    @include('Web.blocks.script-js')
     @yield('scripts')
 </body>
 

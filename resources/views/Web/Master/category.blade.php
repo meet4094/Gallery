@@ -85,35 +85,6 @@
 @endsection
 @section('scripts')
 <script type="text/javascript">
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    });
-
-    // Category
-    $(document).ready(function() {
-        $.ajax({
-            type: 'POST',
-            url: "{{ url('/getCategorydata') }}",
-            success: function(response) {
-                if (response.st == 'success') {
-                    // console.log(response.category);
-                    $.each(response.category, function(prefix, val) {
-                        $('#category_data').append(
-                            `<li><a class="{{ @$title == 'categories' ? 'active' : '' }}" href="{{url('category')}}/${val.id}">${val.name}</a></li>`
-                        )
-                    })
-                } else {
-                    alert('failed');
-                }
-            },
-            error: function(error) {
-                alert('Error');
-            }
-        });
-    });
-
     //Person Data
     $(document).ready(function() {
         var cid = $('#cid').val();
@@ -155,18 +126,19 @@
                         );
                     });
                     var pagecount = response.PdataCount;
+                    var pageDisCount = 5;
                     for (var i = 1; i <= pagecount; i++) {
                         if (i == 1) {
                             $('.product__pagination').append(
                                 `<a onClick="pagination(${i})" id="${i}" style="cursor: pointer;" class="current-page">${i}</a>`
                             )
-                        } else if (i <= 5) {
+                        } else if (i <= pageDisCount) {
                             $('.product__pagination').append(
                                 `<a onClick="pagination(${i})" id="${i}" style="cursor: pointer;">${i}</a>`
                             )
                         }
                     }
-                    if (i > 2) {
+                    if (i > pageDisCount) {
                         $('.product__pagination').append(
                             `<a onClick="pagination(${i})" id="${i}" style="cursor: pointer;"><i class="fa fa-angle-double-right"></i></a>`
                         )
@@ -246,7 +218,7 @@
                 cid: cid
             },
             success: function(response) {
-                console.log(response);
+                // console.log(response);
                 if (response.st == 'success') {
                     $('#recent__product').html('');
                     $.each(response.allperson, function(prefix, val) {
@@ -277,12 +249,13 @@
                     });
                     $('#product__pagination').html('');
                     var pagecount = response.PdataCount;
+                    var pageDisCount = 5;
                     for (var i = 1; i <= pagecount; i++) {
                         if (i == 1) {
                             $('.product__pagination').append(
                                 `<a onClick="pagination(${i})" id="${i}" style="cursor: pointer;" class="current-page">${i}</a>`
                             )
-                        } else if (i <= 2) {
+                        } else if (i <= pageDisCount) {
                             $('.product__pagination').append(
                                 `<a onClick="pagination(${i})" id="${i}" style="cursor: pointer;">${i}</a>`
                             )
@@ -293,7 +266,7 @@
                             `<a onClick="pagination(${response.lastpage})" id="${response.lastpage}" style="cursor: pointer;">${response.lastpage}</a>`
                         )
                     }
-                    if (i > 2) {
+                    if (i > pageDisCount) {
                         $('.product__pagination').append(
                             `<a onClick="pagination(${i})" id="${i}" style="cursor: pointer;"><i class="fa fa-angle-double-right"></i></a>`
                         )
@@ -320,62 +293,87 @@
         });
     }
 
-    // Top View Person
-    $(document).ready(function() {
+    // Search person 
+    $('.search-model-form').on('submit', function(e) {
+        e.preventDefault();
+        var aurl = $(this).attr('action');
+        var form = $(this);
+        var formdata = false;
+        if (window.FormData) {
+            formdata = new FormData(form[0]);
+        }
         $.ajax({
-            type: 'POST',
-            url: "{{ url('/getTopViewPersondata') }}",
+            type: "POST",
+            url: aurl,
+            cache: false,
+            contentType: false,
+            processData: false,
+            data: formdata ? formdata : form.serialize(),
             success: function(response) {
                 if (response.st == 'success') {
-                    // console.log(response.category);
-                    $.each(response.topviewperson, function(prefix, val) {
-                        $('#filter__gallery').append(
-                            `<a href="{{url('person_details')}}/${val.id}"><div class="product__sidebar__view__item set-bg" data-setbg="${val.image}" style="background-image:url('${val.image}');background-position: center">
-                                <div class="view"><i class="fa fa-eye"></i> ${val.trending}</div>
-                                <h5 style="color: #ffffff;font-weight: 700;line-height: 26px;">${val.name}</h5>
-                            </div></a>`
+                    console.log(response.allperson);
+                    $('#recent__product').html('');
+                    $('#product__pagination').html('');
+                    if (response.allperson == '') {
+                        $('#recent__product').append(
+                            `<div style="color:white">Data not found</div>`
+                        )
+                    }
+                    $.each(response.allperson, function(prefix, val) {
+                        $('#recent__product').append(
+                            `<div class="col-lg-4 col-md-6 col-sm-6">
+                            <div class="product__item">
+                            <a href="{{url('person_details')}}/${val.id}">
+                                <div class="product__item__pic set-bg" data-setbg="${val.image}" style="background-image:url('${val.image}')">
+                                    <!-- <div class="ep">18 / 18</div> -->
+                                    <div class="comment">
+                                        <!-- <i class="fa fa-comments"></i> 11 -->
+                                    </div>
+                                    <div class="view"><i class="fa fa-eye"></i> ${val.trending}</div>
+                                </div>
+                                </a>
+                                <div class="product__item__text">
+                                <ul>
+                                    <li>${val.categoryname}
+                                    </li>
+                                </ul> 
+                                    <h5>
+                                        <a href="{{url('person_details')}}/${val.id}">${val.name}</a>
+                                    </h5>
+                                </div>
+                            </div>
+                        </div>`
                         );
                     });
+                    if (response.allperson != '') {
+                        var pagecount = response.PdataCount;
+                        var pageDisCount = 5;
+                        for (var i = 1; i <= pagecount; i++) {
+                            if (i == 1) {
+                                $('.product__pagination').append(
+                                    `<a onClick="pagination(${i})" id="${i}" style="cursor: pointer;" class="current-page">${i}</a>`
+                                )
+                            } else if (i <= pageDisCount) {
+                                $('.product__pagination').append(
+                                    `<a onClick="pagination(${i})" id="${i}" style="cursor: pointer;">${i}</a>`
+                                )
+                            }
+                        }
+                        if (i > pageDisCount) {
+                            $('.product__pagination').append(
+                                `<a onClick="pagination(${i})" id="${i}" style="cursor: pointer;"><i class="fa fa-angle-double-right"></i></a>`
+                            )
+                        }
+                    }
                 } else {
                     alert('failed');
                 }
             },
-            error: function(error) {
+            error: function() {
                 alert('Error');
             }
         });
-    });
-
-    // Filter Top View Person
-    $(".filter__data li").click(function() {
-        var filerId = this.id;
-        $('.filter__data li').addClass('active');
-        $.ajax({
-            type: 'POST',
-            url: "{{ url('/getTopViewPersondata') }}",
-            data: {
-                filerId: filerId
-            },
-            success: function(response) {
-                // console.log(response);
-                if (response.st == 'success') {
-                    $('#filter__gallery').html('');
-                    $.each(response.topviewperson, function(prefix, val) {
-                        $('#filter__gallery').append(
-                            `<a href="{{url('person_details')}}/${val.id}"><div class="product__sidebar__view__item set-bg" data-setbg="${val.image}" style="background-image:url('${val.image}')">
-                                <div class="view"><i class="fa fa-eye"></i> ${val.trending}</div>
-                                <h5 style="color: #ffffff;font-weight: 700;line-height: 26px;">${val.name}</h5>
-                            </div></a>`
-                        );
-                    });
-                } else {
-                    alert('failed');
-                };
-            },
-            error: function(error) {
-                alert('Error');
-            }
-        });
+        return false;
     });
 </script>
 @endsection

@@ -30,13 +30,10 @@ Route::controller(WebController::class)->group(function () {
     Route::post('/getSliderdata', 'getSliderdata');
     Route::post('/getAllPersondata', 'getAllPersondata');
     Route::post('/getTopViewPersondata', 'getTopViewPersondata');
-    Route::post('/getCategoryByPersonData', 'getCategoryByPersonData');
-    Route::post('/getCategoryByAnyPersondata', 'getCategoryByAnyPersondata');
-    // Route::get('/person_details/{id}', 'person_details');
+    Route::post('/getComment', 'getComment');
+    Route::get('/person_details/{id}', 'person_details');
     // Route::post('/sendcomment', 'sendcomment');
-    // Route::post('/getComment', 'getComment');
     // Route::post('/sendMessage', 'sendMessage');
-    // Route::get('/blog', 'blog')->name('blog');
     // Route::post('/searchPerson', 'searchPerson');
 
     // Route::get('/login/google', 'loginGoogle');
