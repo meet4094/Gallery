@@ -226,7 +226,7 @@ class Web extends Model
         $builder->where(array('p.is_del' => 0));
         $builder->where('p.id', '=', $req);
         $builder->join('category as c', 'c.id', '=', 'p.category_id');
-        $builder->select('p.id', 'p.name', 'p.image', 'p.category_id', 'c.name as categoryname', 'c.id as categoryId', 'p.age', 'p.birthdate', 'p.gender', 'p.city', 'p.married_status', 'p.annual_income', 'p.description', 'p.trending');
+        $builder->select('p.id', 'p.name', 'p.image', 'p.category_id', 'c.name as categoryname', 'c.id as categoryId', 'p.age', 'p.birthdate', 'p.gender', 'p.city', 'p.married_status', 'p.annual_income', 'p.description', 'p.trending', 'p.url');
         $builder->orderBy('p.id', 'desc');
         $data = $builder->first();
 
@@ -263,6 +263,7 @@ class Web extends Model
             'city' => $data->city,
             'married_status' => $married_status,
             'annual_income' => $data->annual_income,
+            'url' => $data->url,
             'image' => $PimagefileName,
             'description' => $data->description,
         );
@@ -275,17 +276,21 @@ class Web extends Model
         foreach ($imagesData as $personIdata) {
             $imagefileName = '';
             $videofileName = '';
+            $urlName = '';
             if ($personIdata->images) {
                 $image = $personIdata->images;
                 $imagefileName = asset('images/' . $image);
-            } else {
+            } else if ($personIdata->video) {
                 $video = $personIdata->video;
                 $videofileName = asset('images/' . $video);
+            } else {
+                $urlName = $personIdata->url;
             }
             $PimagesData[] = array(
                 'id' => $personIdata->id,
                 'image' => $imagefileName,
                 'video' => $videofileName,
+                'url' => $urlName,
             );
         }
         $person['categoryname'] = $data->categoryname;

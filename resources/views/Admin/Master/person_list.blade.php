@@ -68,7 +68,7 @@
                                             <div class="col-lg-4">
                                                 <div class="form-group">
                                                     <label class="float-left" for="image">Image<span class="tx-danger">*</span></label>
-                                                    <input type="file" class="form-control" id="image" name="image">
+                                                    <input type="file" class="form-control" id="image" name="image" accept="image/png, image/jpeg, image/jp g">
                                                     <span class="float-left tx-danger error_text image_error"></span>
                                                 </div>
                                             </div>
@@ -116,6 +116,13 @@
                                                     <label class="float-left" for="annual_income">Annual Income</label>
                                                     <input type="text" class="form-control" id="annual_income" name="annual_income" placeholder="Enter Annual income">
                                                     <span class="float-left tx-danger error_text annual_income_error"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <div class="form-group">
+                                                    <label class="float-left" for="url">Url</label>
+                                                    <input type="text" class="form-control" id="url" name="url" placeholder="Enter url">
+                                                    <span class="float-left tx-danger error_text url_error"></span>
                                                 </div>
                                             </div>
                                             <div class="col-lg-12">
@@ -300,6 +307,7 @@
                     $('#married_status').val(response.msg.married_status);
                     $('#city').val(response.msg.city);
                     $('#annual_income').val(response.msg.annual_income);
+                    $('#url').val(response.msg.url);
                     $('#description').val(response.msg.description);
                     var gender = response.msg.gender;
                     if (gender == '0') {

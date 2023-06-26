@@ -20,7 +20,11 @@
         <div class="card custom-card">
             <div class="card-body text-center">
                 <div class="main-profile-overview widget-user-image text-center">
-                    <div class="main-img-user"><img alt="avatar" src="{{ $data['image'] }}"></div>
+                    <div class="main-img-user">
+                        <a target="_blank" href="{{ $data['image'] }}">
+                            <img alt="avatar" src="{{ $data['image'] }}">
+                    </div>
+                    </a>
                 </div>
                 <div class="item-user pro-user">
                     <h4 class="pro-user-username text-dark mt-2 mb-0">{{ $data['name'] }}</h4>
@@ -32,7 +36,7 @@
                     <div class="col-sm-6 border-right">
                         <div class="description-block">
                             <h5 class="description-header mb-1">Age</h5>
-                            <span class="text-muted">{{ $data['age'] }}</span>
+                            <span class="text-muted">{{ $data['age'] }} Years</span>
                         </div>
                     </div>
                     <div class="col-sm-6">
@@ -54,7 +58,7 @@
                 <div class="main-profile-contact-list main-profile-work-list">
                     <div class="media">
                         <div class="media-logo bg-light text-dark">
-                            <i class="fe fe-smartphone"></i>
+                            <i class="fe fe-alert-octagon"></i>
                         </div>
                         <div class="media-body">
                             <span>Category</span>
@@ -64,7 +68,7 @@
                     </div>
                     <div class="media">
                         <div class="media-logo bg-light text-dark">
-                            <i class="fe fe-smartphone"></i>
+                            <i class="fe fe-calendar"></i>
                         </div>
                         <div class="media-body">
                             <span>BirthDate</span>
@@ -74,7 +78,7 @@
                     </div>
                     <div class="media">
                         <div class="media-logo bg-light text-dark">
-                            <i class="fe fe-mail"></i>
+                            <i class="fe fe-map-pin"></i>
                         </div>
                         <div class="media-body">
                             <span>City</span>
@@ -84,7 +88,7 @@
                     </div>
                     <div class="media">
                         <div class="media-logo bg-light text-dark">
-                            <i class="fe fe-map-pin"></i>
+                            <i class="fe fe-check-circle"></i>
                         </div>
                         <div class="media-body">
                             <span>Married Status</span>
@@ -94,12 +98,25 @@
                     </div>
                     <div class="media">
                         <div class="media-logo bg-light text-dark">
-                            <i class="fe fe-map-pin"></i>
+                            <i class="fe fe-dollar-sign"></i>
                         </div>
                         <div class="media-body">
                             <span>Annual Income</span>
                             <div>₹ {{ $data['annual_income'] }}
                             </div>
+                        </div>
+                    </div>
+                    <div class="media">
+                        <div class="media-logo bg-light text-dark">
+                            <i class="fe fe-video"></i>
+                        </div>
+                        <div class="media-body">
+                            <span>YouTube Url</span>
+                            @if($data['url'] != '')
+                            <iframe src="{{$data['url']}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                            @else
+                            <div>Not Found!</div>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -126,17 +143,29 @@
             <div class="card-body tab-content h-100">
                 <div class="tab-pane active" id="tab1over">
                     <div class="main-content-label tx-13 mg-b-20 mt-3">
-                        Image
+                        Images
                     </div>
                     <div class="row">
-                        @foreach($data['personimages'] as $data)
-                        @if($data['image'] != '')
-                        <div class="col-6 col-md-3">
-                            <img style="width: 100%;" alt="Documents image" class="img-thumbnail" src="{{$data['image']}}">
+                        @foreach($data['personimages'] as $dataimage)
+                        @if($dataimage['image'] != '')
+                        <div class="col-6 col-md-4">
+                            <a href="{{$dataimage['image']}}" target="_blank">
+                                <img style="width: 100%;" alt="Documents image" class="img-thumbnail" src="{{$dataimage['image']}}">
+                            </a>
                         </div>
-                        @else
-                        <div class="col-6 col-md-3">
-                            <video style="width: 100%;" controls alt="Documents image" class="img-thumbnail" src="{{$data['video']}}">
+                        @endif
+                        @endforeach
+                    </div>
+                    <div class="main-content-label tx-13 mg-b-20 mt-3">
+                        Videos
+                    </div>
+                    <div class="row">
+                        @foreach($data['personvideos'] as $datavideo)
+                        @if($datavideo['video'] != '')
+                        <div class="col-6 col-md-6">
+                            <a href="{{$datavideo['video']}}" target="_blank">
+                                <video style="width: 100%;" controls alt="Documents image" class="img-thumbnail" src="{{$datavideo['video']}}">
+                            </a>
                         </div>
                         @endif
                         @endforeach

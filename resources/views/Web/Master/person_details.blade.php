@@ -24,7 +24,7 @@
         <div class="anime__details__content">
             <div class="row">
                 <div class="col-lg-3">
-                    <div class="anime__details__pic set-bg" data-setbg="{{$persondetails['persondata']['image']}}">
+                    <div class="anime__details__pic set-bg" style="background-position: center;" data-setbg="{{$persondetails['persondata']['image']}}">
                         <!-- <div class="comment"><i class="fa fa-comments"></i> 11</div>
                         <div class="view"><i class="fa fa-eye"></i> 9141</div> -->
                     </div>
@@ -49,15 +49,11 @@
                         <p>{{$persondetails['persondata']['description']}}</p>
                         <div class="anime__details__widget">
                             <div class="row">
-                                <div class="col-lg-6 col-md-6">
+                                <div class="col-lg-6 col-md-8">
                                     <ul>
                                         <li><span>Age:</span> {{$persondetails['persondata']['age']}}</li>
                                         <li><span>Birthdate:</span> {{$persondetails['persondata']['birthdate']}}</li>
                                         <li><span>Gender:</span> {{$persondetails['persondata']['gender']}}</li>
-                                    </ul>
-                                </div>
-                                <div class="col-lg-6 col-md-6">
-                                    <ul>
                                         @if($persondetails['persondata']['married_status'] != '')
                                         <li><span>Married Status:</span> {{$persondetails['persondata']['married_status']}}</li>
                                         @endif
@@ -69,11 +65,13 @@
                                         @endif
                                     </ul>
                                 </div>
+                                <div class="col-lg-6 col-md-4">
+                                    <ul>
+                                        <li><span>YouTube Video</span></li>
+                                        <iframe src="{{$persondetails['persondata']['url']}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                                    </ul>
+                                </div>
                             </div>
-                        </div>
-                        <div class="anime__details__btn">
-                            <!-- <a href="#" class="follow-btn"><i class="fa fa-heart-o"></i> Follow</a>
-                            <a href="#" class="watch-btn"><span>Watch Now</span> <i class="fa fa-angle-right"></i></a> -->
                         </div>
                     </div>
                 </div>
@@ -112,9 +110,30 @@
                     <div class="row">
                         @foreach($persondetails['personimage'] as $data)
                         @if($data['video'] != '')
-                        <div class="col-lg-3 col-md-6 col-sm-6">
+                        <div class="col-lg-6 col-md-6 col-sm-6">
                             <div class="product__item">
                                 <video onclick="videoWindow(this)" style="width: 100%;" controls src="{{$data['video']}}" alt="">
+                                    <video style="width: 100%;" controls src="https://youtu.be/eZ4X7tj_Q8M" alt="">
+                            </div>
+                        </div>
+                        @endif
+                        @endforeach
+                    </div>
+                </div>
+                <div class="trending__product">
+                    <div class="row">
+                        <div class="col-lg-8 col-md-8 col-sm-8">
+                            <div class="section-title">
+                                <h4>More YouTube Videos</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        @foreach($persondetails['personimage'] as $data)
+                        @if($data['url'] != '')
+                        <div class="col-lg-6 col-md-6 col-sm-6">
+                            <div class="product__item">
+                                <iframe width="100%" height="250px" src="{{$data['url']}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                             </div>
                         </div>
                         @endif
@@ -159,10 +178,10 @@
             <div class="carousel-container">
                 <span class="close">&times;</span>
                 <div class="slider">
-                    @foreach($persondetails['personimage'] as $data)
+                    @foreach($persondetails['personimage'] as $key => $data)
                     @if($data['image'] != '')
-                    <div class="images">
-                        <img class="modal-content" src="{{$data['image']}}">
+                    <div class="images {{$key}}" id="{{$key}}">
+                        <a target="_blank" href="{{$data['image']}}"><img class="modal-content" src="{{$data['image']}}"></a>
                     </div>
                     @endif
                     @endforeach
@@ -251,7 +270,17 @@
     });
 </script>
 <script type="text/javascript">
-    function imgWindow() {
+    function imgWindow(e) {
+        var id = e.id;
+        var open = document.getElementsByClassName("images");
+        for (i = 0; i < open.length; i++) {
+            open[i].style.display = "none";
+        }
+        for (i = 0; i < open.length; i++) {
+            if (open[i].className == 'images ' + id) {
+                open[i].style.display = "block";
+            }
+        }
         var modal = document.getElementById("myModalImage");
         modal.style.display = "block";
         var span = document.getElementsByClassName("close")[0];
@@ -261,34 +290,30 @@
     }
 
     //Initiate moving of slides
-
     var currentIndex = 1;
 
     showSlides(currentIndex);
 
     //Function to move Next
     function plusSlides(n) {
+        id = imgWindow();
         showSlides(currentIndex += n);
     }
 
     function showSlides(n) {
-        var i;
+        var i = 0;
         var slides = document.getElementsByClassName("images");
-        var dots = document.getElementsByClassName("navigation-dot");
         if (n > slides.length) {
             currentIndex = 1
         }
         if (n < 1) {
             currentIndex = slides.length
         }
-        for (i = 0; i < slides.length; i++) {
+        for (i; i < slides.length; i++) {
             slides[i].style.display = "none";
         }
-        for (i = 0; i < dots.length; i++) {
-            dots[i].className = dots[i].className.replace(" active", "");
-        }
+        // console.log(currentIndex);
         slides[currentIndex - 1].style.display = "block";
-        // dots[currentIndex - 1].className += " active";
     }
 </script>
 @endsection

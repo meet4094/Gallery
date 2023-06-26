@@ -212,6 +212,7 @@ class Admin extends Model
                 'city' => $req->city ? $req->city : '',
                 'annual_income' => $req->annual_income ? $req->annual_income : '',
                 'description' => $req->description,
+                'url' => $req->url,
             );
             if (empty($req->personId)) {
                 $data['created_at'] = date('Y-m-d H:i');
@@ -230,6 +231,7 @@ class Admin extends Model
         $data = DB::table('person as p')->where(array('p.id' => $req))->join('category as c', 'c.id', '=', 'p.category_id')->select('p.*', 'c.name as categoryname')->first();
         $images = DB::table('images')->select('images', 'video')->where(array('person_id' => $req))->get();
         $personimage = array();
+        $personvideos = array();
         foreach ($images as $image) {
             $imagefileName = '';
             $videofileName = '';
@@ -242,6 +244,8 @@ class Admin extends Model
             }
             $personimage[] = array(
                 'image' => $imagefileName,
+            );
+            $personvideos[] = array(
                 'video' => $videofileName,
             );
         }
@@ -261,6 +265,7 @@ class Admin extends Model
             'categoryname' => $data->categoryname,
             'name' => $data->name,
             'image' => $imagefileName,
+            'url' => $data->url,
             'age' => $data->age,
             'birthdate' => $data->birthdate,
             'gender' => $gender,
@@ -268,10 +273,12 @@ class Admin extends Model
             'city' => $data->city,
             'annual_income' => $data->annual_income,
             'description' => $data->description,
+            'url' => $data->url,
             'personimages' => $personimage,
+            'personvideos' => $personvideos,
         );
         // echo '<pre>';
-        // print_r($data['personimages']);
+        // print_r($data);
         // die;
         return $data;
     }
@@ -290,7 +297,7 @@ class Admin extends Model
             $builder->where('i.person_id', $req->person_id);
             $builder->orWhere('p.category_id', $req->category_id);
         }
-        $builder->select('i.id', 'p.name', 'i.images', 'i.video', 'c.name as categoryname');
+        $builder->select('i.id', 'p.name', 'i.images', 'i.video', 'i.url', 'c.name as categoryname');
         $data = $builder->get();
         return DataTables::of($data)
             ->addIndexColumn()
@@ -298,8 +305,10 @@ class Admin extends Model
                 $url = asset('images');
                 if ($row->images) {
                     $images = '<a target="_blank" href="' . $url . '/' . $row->images . '" class="btn btn-link"><img src = "' . $url . '/' . $row->images . '"width=100px height=100px></a>';
-                } else {
+                } else if ($row->video) {
                     $images = '<a target="_blank" href="' . $url . '/' . $row->video . '" class="btn btn-link"><video controls src = "' . $url . '/' . $row->video . '"width=150px height=100px></a>';
+                } else {
+                    $images = '<iframe width=150px height=100px src="' . $row->url . '" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>';
                 }
                 return $images;
             })
@@ -315,11 +324,12 @@ class Admin extends Model
     public function add_edit_images($req)
     {
         if (empty($req->imagesId)) {
-            if (empty($req->images) && empty($req->videos)) {
+            if (empty($req->images) && empty($req->videos) && empty($req->urls[0])) {
                 $rules = array(
                     'person' => 'required',
                     'images' => 'required',
                     'videos' => 'required',
+                    'urls' => 'required',
                 );
             } else {
                 $rules = array(
@@ -336,28 +346,38 @@ class Admin extends Model
             return response()->json(['error' => $validator->errors()->toArray()]);
         } else {
             if (isset($req->images)) {
-                $images_videos = $req->images;
+                $images_videos_urls = $req->images;
+            } else if (isset($req->videos)) {
+                $images_videos_urls = $req->videos;
             } else {
-                $images_videos = $req->videos;
+                $images_videos_urls = $req->urls;
             }
             if (empty($req->imagesId)) {
-                foreach ($images_videos as $image_video) {
-                    $file = $image_video;
-                    $extension = $file->extension();
-                    $fileName = md5(uniqid() . time()) . '.' . $extension;
-                    $file->move(public_path('images/'), $fileName);
-
+                foreach ($images_videos_urls as $image_video_url) {
+                    if (isset($req->images) || isset($req->videos)) {
+                        $file = $image_video_url;
+                        $extension = $file->extension();
+                        $fileName = md5(uniqid() . time()) . '.' . $extension;
+                        $file->move(public_path('images/'), $fileName);
+                    }
                     if (isset($req->images)) {
                         $data = array(
                             'person_id' => $req->person,
                             'images' => $fileName,
                             'video' => '',
                         );
-                    } else {
+                    } else if (isset($req->videos)) {
                         $data = array(
                             'person_id' => $req->person,
                             'images' => '',
                             'video' => $fileName,
+                        );
+                    } else {
+                        $data = array(
+                            'person_id' => $req->person,
+                            'images' => '',
+                            'video' => '',
+                            'url' => $image_video_url,
                         );
                     }
                     $data['created_at'] = date('Y-m-d H:i');
@@ -402,12 +422,21 @@ class Admin extends Model
                         'person_id' => $req->person,
                         'images' => $fileName,
                         'video' => '',
+                        'url' => '',
+                    );
+                } else if (isset($req->videos)) {
+                    $data = array(
+                        'person_id' => $req->person,
+                        'images' => '',
+                        'video' => $fileName,
+                        'url' => '',
                     );
                 } else {
                     $data = array(
                         'person_id' => $req->person,
                         'images' => '',
-                        'video' => $fileName,
+                        'video' => '',
+                        'url' => $req->urls[0],
                     );
                 }
                 $data['updated_at'] = date('Y-m-d H:i');
@@ -448,6 +477,7 @@ class Admin extends Model
                     'categoryname' => $data->categoryname,
                     'name' => $data->name,
                     'image' => $imagefileName,
+                    'url' => $data->url,
                     'age' => $data->age,
                     'birthdate' => $data->birthdate,
                     'gender' => $data->gender,
@@ -460,7 +490,7 @@ class Admin extends Model
                 $data = DB::table('images as i')
                     ->where(array('i.id' => $req->imagesId))
                     ->join('person as p', 'p.id', '=', 'i.person_id')
-                    ->select('i.id', 'i.person_id', 'p.name', 'i.images', 'i.video')
+                    ->select('i.id', 'i.person_id', 'p.name', 'i.images', 'i.video', 'i.url')
                     ->first();
                 if ($data->images == '') {
                     $imagefileName = '';
@@ -472,12 +502,18 @@ class Admin extends Model
                 } else {
                     $videofileName = asset('images/' . $data->video);
                 }
+                if ($data->url == '') {
+                    $urlName = '';
+                } else {
+                    $urlName = $data->url;
+                }
                 $data = array(
                     'id' => $data->id,
                     'modelID' => $data->person_id,
                     'modelname' => $data->name,
                     'image' => $imagefileName,
                     'video' => $videofileName,
+                    'url' => $urlName,
                 );
             } else {
                 $data = DB::table('category')

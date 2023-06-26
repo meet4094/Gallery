@@ -1057,7 +1057,7 @@ ol {
 
 .anime__details__widget ul li span {
     color: #b7b7b7;
-    width: 115px;
+    width: 150px;
     display: inline-block;
 }
 
@@ -1356,8 +1356,8 @@ ol {
 /* The Close Button */
 .close {
     position: absolute;
-    top: -70px;
-    right: 0px;
+    top: 0px;
+    right: 5px;
     color: #f1f1f1;
     font-size: 40px;
     font-weight: bold;
@@ -1372,9 +1372,11 @@ ol {
 }
 
 /* 100% Image Width on Smaller Screens */
-@media only screen and (max-width: 700px) {
+@media only screen and (max-width: 900px) {
     .modal-content {
-        width: 100%;
+        width: 90%;
+        height: 90%;
+        max-width: 660px;
     }
 }
 
@@ -1408,9 +1410,11 @@ video {
 
 /* Slideshow container */
 .carousel-container {
-    max-width: 1000px;
-    position: relative;
-    margin: auto;
+    /* max-width: 1000px; */
+    /* position: relative; */
+    /* margin: auto; */
+    width: 100%;
+    height: 100%;
 }
 
 /* Next & previous buttons */
@@ -2464,7 +2468,7 @@ video {
         margin-bottom: 25px;
     }
     .anime__details__widget ul li span {
-        width: 85px;
+        width: 150px;
     }
     .anime__video__player .plyr__volume {
         left: 65px;

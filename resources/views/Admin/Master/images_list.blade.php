@@ -77,6 +77,17 @@
                                                     <div id="video"></div>
                                                 </div>
                                             </div>
+                                            <div class="col-lg-12">
+                                                <div class="form-group">
+                                                    <label class="float-left" style="float: none !important;" for="urls">YouTube Urls</label>
+                                                    <div class="d-flex" style="justify-content: center; align-items: center;">
+                                                        <input type="text" class="form-control" id="urls" name="urls[]" placeholder="Enter Url">
+                                                        <input id="plush" type="button" value="+" class="add btn btn-primary" onclick="addBox()">
+                                                    </div>
+                                                    <span class="float-left tx-danger error_text urls_error"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12" id='tex'></div>
                                         </div>
                                     </div>
                                 </div>
@@ -154,6 +165,8 @@
         $('#video').html('');
         $('#images').attr('disabled', false);
         $('#videos').attr('disabled', false);
+        $('#urls').attr('disabled', false);
+        $('#plush').attr('disabled', false);
         document.getElementById("cform").reset();
         $('.modal-title').html('Add Images & Videos');
     });
@@ -214,6 +227,7 @@
             processData: false,
             data: formdata ? formdata : form.serialize(),
             success: function(response) {
+                // console.log(response);
                 if (response.st == 'success') {
                     $('#add_edit_images').modal('toggle');
                     $('.form_proccessing').html('');
@@ -240,12 +254,40 @@
     var images = document.getElementById("images");
     images.addEventListener("input", function() {
         document.getElementById("videos").disabled = this.value != "";
+        document.getElementById("url").disabled = this.value != "";
     });
 
     var videos = document.getElementById("videos");
     videos.addEventListener("input", function() {
         document.getElementById("images").disabled = this.value != "";
+        document.getElementById("url").disabled = this.value != "";
     });
+
+    var videos = document.getElementById("urls");
+    videos.addEventListener("input", function() {
+        document.getElementById("images").disabled = this.value != "";
+        document.getElementById("videos").disabled = this.value != "";
+    });
+
+    var counter = 1;
+    var textBox = "";
+    var tex = document.getElementById('tex');
+
+    function addBox() {
+        var div = document.createElement("div");
+        div.setAttribute("id", "text_" + counter);
+
+        textBox = '<div class="form-group"><div class="d-flex" style="justify-content: center; align-items: center;"><input type="text" class="form-control" id="urls" name="urls[]" placeholder="Enter Url"><input type="button" value="-" onclick ="removeBox(this)" class="add btn btn-danger"></div></div>';
+        div.innerHTML = textBox;
+
+        tex.appendChild(div);
+
+        counter++;
+    }
+
+    function removeBox(ele) {
+        ele.parentNode.parentNode.remove();
+    }
 
     function edit_modelCategory(edit_employee) {
         var imagesId = $(edit_employee).data('val');
@@ -258,7 +300,7 @@
                 tableName: tableName
             },
             success: function(response) {
-                // console.log(response);
+                console.log(response);
                 if (response.st == 'success') {
                     $('#model').html('');
                     $('#image').html('');
@@ -271,13 +313,23 @@
                     $('#model').append(
                         `<option class="" value="${response.msg.modelID}" selected>${response.msg.modelname}</option>`
                     );
-                    if (response.msg.image == '') {
+                    if (response.msg.image == '' && response.msg.video == '') {
                         $('#images').attr('disabled', true);
+                        $('#videos').attr('disabled', true);
+                        $('#urls').removeAttr('disabled', true);
+                        $('#plush').attr('disabled', true);
+                        $('#urls').val(response.msg.url);
+                    } else if (response.msg.image == '') {
+                        $('#images').attr('disabled', true);
+                        $('#urls').attr('disabled', true);
+                        $('#plush').attr('disabled', true);
                         $('#video').append(
                             `<a target="_blank" href="${response.msg.video}" class="btn btn-link"><video controls src = "${response.msg.video}"width=150px height=100px></a>`
                         );
-                    } else {
+                    } else if (response.msg.video == '') {
                         $('#videos').attr('disabled', true);
+                        $('#urls').attr('disabled', true);
+                        $('#plush').attr('disabled', true);
                         $('#image').append(
                             `<a target="_blank" href="${response.msg.image}" class="btn btn-link"><img src = "${response.msg.image}"width=100px height=100px></a>`
                         );
