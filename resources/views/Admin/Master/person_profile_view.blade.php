@@ -170,6 +170,18 @@
                         @endif
                         @endforeach
                     </div>
+                    <div class="main-content-label tx-13 mg-b-20 mt-3">
+                        YouTube Videos
+                    </div>
+                    <div class="row">
+                        @foreach($data['yurl'] as $dataurl)
+                        @if($dataurl['url'] != '')
+                        <div class="col-6 col-md-6">
+                        <iframe width="100%" height="250px" src="{{$dataurl['url']}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        </div>
+                        @endif
+                        @endforeach
+                    </div>
                 </div>
             </div>
         </div>

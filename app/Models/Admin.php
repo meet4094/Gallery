@@ -229,24 +229,31 @@ class Admin extends Model
     public function person_profile_view($req)
     {
         $data = DB::table('person as p')->where(array('p.id' => $req))->join('category as c', 'c.id', '=', 'p.category_id')->select('p.*', 'c.name as categoryname')->first();
-        $images = DB::table('images')->select('images', 'video')->where(array('person_id' => $req))->get();
+        $images = DB::table('images')->select('images', 'video', 'url')->where(array('person_id' => $req))->get();
         $personimage = array();
         $personvideos = array();
+        $url = array();
         foreach ($images as $image) {
             $imagefileName = '';
             $videofileName = '';
+            $yurl = '';
             if ($image->images) {
                 $image = $image->images;
                 $imagefileName = asset('images/' . $image);
-            } else {
+            } else if ($image->video) {
                 $video = $image->video;
                 $videofileName = asset('images/' . $video);
+            } else {
+                $yurl = $image->url;
             }
             $personimage[] = array(
                 'image' => $imagefileName,
             );
             $personvideos[] = array(
                 'video' => $videofileName,
+            );
+            $url[] = array(
+                'url' => $yurl,
             );
         }
         $imagefileName = asset('images/' . $data->image);
@@ -276,10 +283,8 @@ class Admin extends Model
             'url' => $data->url,
             'personimages' => $personimage,
             'personvideos' => $personvideos,
+            'yurl' => $url,
         );
-        // echo '<pre>';
-        // print_r($data);
-        // die;
         return $data;
     }
 
