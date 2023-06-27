@@ -12,10 +12,9 @@
             <div class="col-lg-6">
                 <div class="footer__nav">
                     <ul>
-                        <li class="active"><a href="/">Homepage</a></li>
-                        <li><a href="/categories">Categories</a></li>
-                        <!-- <li><a href="/blog">Our Blog</a></li> -->
-                        <li><a href="/contacts">Contacts</a></li>
+                        <li class="{{ @$title == 'home' ? 'active' : '' }}"><a href="{{ url('/') }}">Homepage</a></li>
+                        <li class="{{ @$title == 'categories' ? 'active' : '' }}"><a href="{{ url('categories') }}">Categories</a></li>
+                        <li class="{{ @$title == 'contacts' ? 'active' : '' }}"><a href="{{ url('/contacts') }}">Contacts</a></li>
                     </ul>
                 </div>
             </div>

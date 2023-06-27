@@ -315,17 +315,15 @@ class Web extends Model
             if (empty($login)) {
                 return response()->json(['st' => 'success', 'msg' => 'Please Login']);
             } else {
-                $data = $this->web->sendcomment($req);
-                return $data;
+                $data = array(
+                    'user_id' => '',
+                    'person_id' => $req->pid,
+                    'comment' => $req->comment,
+                );
+                $data['created_at'] = date('Y-m-d H:i');
+                DB::table('comment')->insert($data);
+                return response()->json(['st' => 'success', 'msg' => 'Comment has been added',]);
             }
-            $data = array(
-                'user_id' => '',
-                'person_id' => $req->pid,
-                'comment' => $req->comment,
-            );
-            $data['created_at'] = date('Y-m-d H:i');
-            DB::table('comment')->insert($data);
-            return response()->json(['st' => 'success', 'msg' => 'Comment has been added',]);
         }
     }
 
@@ -383,28 +381,23 @@ class Web extends Model
         try {
 
             $user = Socialite::driver('google')->user();
+            $finduser = User::where('google_id', $user->id)->first();
 
-            $finduser = DB::table('users')->where('google_id', $user->id)->first();
-            // echo '<pre>';
-            // print_r($finduser);
-            // die;
             if ($finduser) {
 
                 Auth::login($finduser);
 
                 return redirect()->intended('/');
             } else {
-                $newUser = array(
+                $newUser = User::create([
                     'google_id' => $user->id,
                     'email' => $user->email,
                     'user_name' => $user->name,
                     'password' => Hash::make($user->name . '@' . $user->id),
-                    'image' => $user->picture,
+                    'image' => $user->avatar,
                     'request_token' => Str::random(15),
                     'type' => '2'
-                );
-
-                DB::table('users')->insert($newUser);
+                ]);
 
                 Auth::login($newUser);
 

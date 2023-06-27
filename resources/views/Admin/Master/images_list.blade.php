@@ -254,13 +254,15 @@
     var images = document.getElementById("images");
     images.addEventListener("input", function() {
         document.getElementById("videos").disabled = this.value != "";
-        document.getElementById("url").disabled = this.value != "";
+        document.getElementById("urls").disabled = this.value != "";
+        document.getElementById("plush").disabled = this.value != "";
     });
 
     var videos = document.getElementById("videos");
     videos.addEventListener("input", function() {
         document.getElementById("images").disabled = this.value != "";
-        document.getElementById("url").disabled = this.value != "";
+        document.getElementById("urls").disabled = this.value != "";
+        document.getElementById("plush").disabled = this.value != "";
     });
 
     var videos = document.getElementById("urls");

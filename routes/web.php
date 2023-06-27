@@ -32,12 +32,10 @@ Route::controller(WebController::class)->group(function () {
     Route::post('/getTopViewPersondata', 'getTopViewPersondata');
     Route::post('/getComment', 'getComment');
     Route::get('/person_details/{id}', 'person_details');
-    // Route::post('/sendcomment', 'sendcomment');
-    // Route::post('/sendMessage', 'sendMessage');
-    // Route::post('/searchPerson', 'searchPerson');
+    Route::post('/sendcomment', 'sendcomment');
 
-    // Route::get('/login/google', 'loginGoogle');
-    // Route::get('/login/google/callback', 'callback');
+    Route::get('/login/google', 'loginGoogle');
+    Route::get('/login/google/callback', 'callback');
 });
 
 // ADMIN ROUTE

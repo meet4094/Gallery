@@ -107,22 +107,4 @@ class WebController extends Controller
             return $data;
         }
     }
-
-    // Contact Page Form Message Function
-    public function sendMessage(Request $req)
-    {
-        if ($req->ajax()) {
-            $data = $this->web->sendMessage($req);
-            return $data;
-        }
-    }
-
-    // Header Search Data
-    public function searchPerson(Request $req)
-    {
-        if ($req->ajax()) {
-            $data = $this->web->searchPerson($req);
-            return $data;
-        }
-    }
 }

@@ -5,7 +5,7 @@
         <h2 class="main-content-title tx-24 mg-b-5">Welcome To Dashboard</h2>
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="#">Home</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Kushal Karigar Dashboard</li>
+            <li class="breadcrumb-item active" aria-current="page">Model Dashboard</li>
         </ol>
     </div>
 </div>
